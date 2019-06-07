@@ -21,7 +21,7 @@
     "eslint-plugin-no-loops": "^0.3.0",
     "eslint-plugin-react": "^6.10.0",
     "file-loader": "^0.10.1",
-    "request": "^2.81.0",
+    "request": "^2.88.0",
     "style-loader": "^0.23.1",
     "webpack": "4",
     "webpack-cli": "^3.0.8",
@@ -29,6 +29,8 @@
     "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
+    "acorn-dynamic-import": "^4.0.0",
+    "chart.js": "^2.8.0",
     "d3-fetch": "^1.1.0",
     "d3-scale": "^2.0.0",
     "d3-scale-chromatic": "^1.2.0",
