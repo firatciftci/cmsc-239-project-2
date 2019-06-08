@@ -17,9 +17,13 @@
       <div id="container" style="width: 75%;">
         <canvas id="RegionsBarChart"></canvas>
       </div>
-      <button id="toggleParties" onclick="toggleParties()">Toggle Parties</button>
+      <!-- <button id="toggleParties" onclick="toggleParties()">Toggle Parties</button> -->
       <script>
         const SECRETKEY = "$2a$10$95O3pYS8s40pMgpxV.LKI.n5pC9JTNFa3MODMZzfDG2JAZ3mhrIFe";
+
+        function mean(arr) {
+          return arr.reduce((p,c,_,a) => p + c/a.length,0);
+        }
 
         function groupBy(data, key) {
           return data.reduce((acc, row) => {
@@ -34,68 +38,219 @@
         function getElectionsData() {
           let req = new XMLHttpRequest();
 
-          req.onreadystatechange = () => {
-            if (req.readyState == XMLHttpRequest.DONE) {
-              console.log(req.responseText);
-            }
-          };
+          // req.onreadystatechange = () => {
+          //   if (req.readyState == XMLHttpRequest.DONE) {
+          //     console.log(req.responseText);
+          //   }
+          // };
+
+          let countryData = null;
           
           req.open("GET", "https://api.jsonbin.io/b/5cfa90ecd2127723845da142", true);
           req.setRequestHeader("secret-key", SECRETKEY);
+          req.onload  = function() {
+            var jsonResponse = req.response;
+            countryData = JSON.parse(jsonResponse);
+            const regions = [...new Set(countryData.map(d => d.Region))];
+            const regionData = [];
+            console.log(regions);
+            regions.forEach(region => {
+              const specificRegion = {};
+              const regionDataFirstYearMean = mean(
+                countryData.filter(d => d.Region === region && d.ElectionYear <= 2005).map(d => d.ElectionYear)
+              );
+              const regionDataFirstMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              const regionDataLastYearMean = mean(
+                countryData.filter(d => d.Region === region && d.ElectionYear > 20005).map(d => d.ElectionYear)
+              );
+              const regionDataLastMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear > 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              specificRegion['Region'] = region;
+              specificRegion['FirstScore'] = regionDataFirstMean;
+              specificRegion['SecondScore'] = regionDataLastMean;
+              specificRegion['MeanScore'] = mean([regionDataFirstMean, regionDataLastMean]);
+              regionData.push(specificRegion);
+            });
+            console.log(regionData);
+            var chart = document.getElementById("RegionsBarChart");
+            const regionDataR = groupBy(regionData, 'Region');
+            const regionDataV1 = groupBy(regionData, 'FirstScore');
+            const regionDataV2 = groupBy(regionData, 'SecondScore');
+            const regionDataM = groupBy(regionData, 'MeanScore');
+            console.log(regionDataR);
+            var regionsBarChart = new Chart(chart, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(regionDataR),
+                    datasets: [{
+                        label: 'Political Leaning First Election',
+                        data: Object.keys(regionDataV1),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(255, 99, 132, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    },
+                    {
+                      label: 'Political Leaning Last Election',
+                        data: Object.keys(regionDataV2),
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(54, 162, 235, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    },
+                    {
+                      label: 'Mean Political Leaning',
+                        data: Object.keys(regionDataM),
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+
+            function toggleParties() {
+                myData = [3, 5, 9, 14, 40, 102];
+                regionsBarChart.data.datasets[0].data = myData;
+                regionsBarChart.update();
+            }
+          };
           req.send();
 
-          return req;
+          return countryData;
         }
 
         const countryData = getElectionsData();
-        // const regions = [...new Set(countryData.map(d => d.Region))];
-        const regions = countryData[0];
-        console.log(regions);
 
-        var chart = document.getElementById("RegionsBarChart");
-        var myData = [12, 19, 3, 5, 2, 3];
-        var regionsBarChart = new Chart(chart, {
-            type: 'bar',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: myData,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        });
+        // var chart = document.getElementById("RegionsBarChart");
+        // var myData = [12, 19, 3, 5, 2, 3];
+        // var regionsBarChart = new Chart(chart, {
+        //     type: 'bar',
+        //     data: {
+        //         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        //         datasets: [{
+        //             label: '# of Votes',
+        //             data: myData,
+        //             backgroundColor: [
+        //                 'rgba(255, 99, 132, 0.2)',
+        //                 'rgba(54, 162, 235, 0.2)',
+        //                 'rgba(255, 206, 86, 0.2)',
+        //                 'rgba(75, 192, 192, 0.2)',
+        //                 'rgba(153, 102, 255, 0.2)',
+        //                 'rgba(255, 159, 64, 0.2)'
+        //             ],
+        //             borderColor: [
+        //                 'rgba(255, 99, 132, 1)',
+        //                 'rgba(54, 162, 235, 1)',
+        //                 'rgba(255, 206, 86, 1)',
+        //                 'rgba(75, 192, 192, 1)',
+        //                 'rgba(153, 102, 255, 1)',
+        //                 'rgba(255, 159, 64, 1)'
+        //             ],
+        //             borderWidth: 1
+        //         }]
+        //     },
+        //     options: {
+        //         scales: {
+        //             yAxes: [{
+        //                 ticks: {
+        //                     beginAtZero: true
+        //                 }
+        //             }]
+        //         }
+        //     }
+        // });
 
-        function toggleParties() {
-            myData = [3, 5, 9, 14, 40, 102];
-            regionsBarChart.data.datasets[0].data = myData;
-            regionsBarChart.update();
-        }
+        // function toggleParties() {
+        //     myData = [3, 5, 9, 14, 40, 102];
+        //     regionsBarChart.data.datasets[0].data = myData;
+        //     regionsBarChart.update();
+        // }
       </script>
     </body>
 </html>
