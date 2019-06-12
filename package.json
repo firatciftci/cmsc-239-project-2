@@ -38,8 +38,7 @@
     "d3-shape": "^1.2.0",
     "mathjs": "^5.10.3",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-vis": "^1.11.7"
+    "react-dom": "^16.8.6"
   },
   "scripts": {
     "start": "webpack-dev-server --progress --hot --port 3001 --open",

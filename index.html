@@ -1,318 +1,362 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <title>EXPLAINABLE</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link href="main.css"  type="text/css" rel="stylesheet" />
+    <title>Ideological Shift In Elections Between 2000 & 2018</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link href="main.css" type="text/css" rel="stylesheet" />
     <script src="bundle.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <link rel="stylesheet" href="https://unpkg.com/react-vis/dist/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <!-- Bar 1 (David) -->
-    <div id="container" style="width: 60%; float: left">
-      <strong>Bar Chart of Political Leaning by Region</strong>
-      <canvas id="RegionsBarChart"></canvas>
-    </div>
-    <div id="text1" style="width: 39%; float:right; padding-top: 30px;">
-      <p>
-        The bar chart to the left allows the user to both hover over the individual bars
-        in order to see more exact values (for ratio comparisons) and change the datasets displayed by clicking on the
-        legend. By only displaying the political leanings in the first and last election,
-        in at least 6 of the regions -- namely Western Europe, Southwestern Europe, Southern Europe, Central Asia, and Southwest Asia --
-        there has been a signficiant rise in their weighted election score between the first and last election.
-        A more positive weighted election score signals more right-wing politics and a more negative score represents a more left-wing political leaning.
-        In only 3 regions -- Northern Europe, Southeastern Europe, and North America -- we saw a rise in left-wing politics.
-        The last 3 regions -- Eastern Europe, Central Europe, and the Middle East -- we saw no change.
-      </p>
-    </div>
-    <script>
-      const SECRETKEY = "$2a$10$95O3pYS8s40pMgpxV.LKI.n5pC9JTNFa3MODMZzfDG2JAZ3mhrIFe";
+    <div class="content">
+      <div class="title">
+        <div class="title-main">
+          Ideological Shift In Elections Between 2000 & 2018
+        </div>
+        <div class="title-main-sub">
+          Firat Ciftci · Joe Berusch · David Yaffe
+        </div>
+      </div>
 
-      function mean(arr) {
-        return arr.reduce((p,c,_,a) => p + c/a.length,0);
-      }
+      <!-- Bar 1 (David) -->
+      <div class="vis-group">
+        <div class="vis-text">
+          The bar chart below allows the user to both hover over the individual bars in order to see more
+          exact values (for ratio comparisons) and change the datasets displayed by clicking on the legend. By
+          only displaying the political leanings in the first and last election, in at least 6 of the regions
+          – namely Western Europe, Southwestern Europe, Southern Europe, Central Asia, and Southwest Asia –
+          there has been a signficiant rise in their weighted election score between the first and last
+          election. A more positive weighted election score signals more right-wing politics and a more
+          negative score represents a more left-wing political leaning. In only 3 regions – Northern Europe,
+          Southeastern Europe, and North America – we saw a rise in left-wing politics. The last 3 regions –
+          Eastern Europe, Central Europe, and the Middle East – we saw no change.
+        </div>
+        <div class="vis">
+          <div class="vis-title">Bar Chart of Political Leaning by Region</div>
+          <canvas id="RegionsBarChart"></canvas>
+        </div>
+      </div>
+      <script>
+        const SECRETKEY = '$2a$10$95O3pYS8s40pMgpxV.LKI.n5pC9JTNFa3MODMZzfDG2JAZ3mhrIFe';
 
-      function groupBy(data, key) {
-        return data.reduce((acc, row) => {
-          if (!acc[row[key]]) {
-            acc[row[key]] = [];
-          }
-          acc[row[key]].push(row);
-          return acc;
-        }, {});
-      }
+        function mean(arr) {
+          return arr.reduce((p, c, _, a) => p + c / a.length, 0);
+        }
 
-      function getElectionsData() {
-        let req = new XMLHttpRequest();
+        function groupBy(data, key) {
+          return data.reduce((acc, row) => {
+            if (!acc[row[key]]) {
+              acc[row[key]] = [];
+            }
+            acc[row[key]].push(row);
+            return acc;
+          }, {});
+        }
 
-        let countryData = null;
-        
-        req.open("GET", "https://api.jsonbin.io/b/5cfa90ecd2127723845da142", true);
-        req.setRequestHeader("secret-key", SECRETKEY);
-        req.onload  = function() {
-          var jsonResponse = req.response;
-          countryData = JSON.parse(jsonResponse);
-          const regions = [...new Set(countryData.map(d => d.Region))];
-          const regionData = [];
-          // console.log(regions);
-          regions.forEach(region => {
-            const specificRegion = {};
-            const regionDataFirstYearMean = mean(
-              countryData.filter(d => d.Region === region && d.ElectionYear <= 2005).map(d => d.ElectionYear)
-            );
-            const regionDataFirstMean = mean(
-              countryData
-                .filter(d => d.Region === region && d.ElectionYear <= 2005)
-                .map(d => d.WeightedElectionScore)
-            );
-            const regionDataLastYearMean = mean(
-              countryData.filter(d => d.Region === region && d.ElectionYear > 20005).map(d => d.ElectionYear)
-            );
-            const regionDataLastMean = mean(
-              countryData
-                .filter(d => d.Region === region && d.ElectionYear > 2005)
-                .map(d => d.WeightedElectionScore)
-            );
-            specificRegion['Region'] = region;
-            specificRegion['FirstScore'] = regionDataFirstMean;
-            specificRegion['SecondScore'] = regionDataLastMean;
-            specificRegion['MeanScore'] = mean([regionDataFirstMean, regionDataLastMean]);
-            regionData.push(specificRegion);
-          });
-          // console.log(regionData);
-          var chart = document.getElementById("RegionsBarChart");
-          const regionDataR = groupBy(regionData, 'Region');
-          const regionDataV1 = groupBy(regionData, 'FirstScore');
-          const regionDataV2 = groupBy(regionData, 'SecondScore');
-          const regionDataM = groupBy(regionData, 'MeanScore');
-          // console.log(regionDataR);
-          var regionsBarChart = new Chart(chart, {
+        function getElectionsData() {
+          let req = new XMLHttpRequest();
+
+          let countryData = null;
+
+          req.open('GET', 'https://api.jsonbin.io/b/5cfa90ecd2127723845da142', true);
+          req.setRequestHeader('secret-key', SECRETKEY);
+          req.onload = function() {
+            var jsonResponse = req.response;
+            countryData = JSON.parse(jsonResponse);
+            const regions = [...new Set(countryData.map(d => d.Region))];
+            const regionData = [];
+            // console.log(regions);
+            regions.forEach(region => {
+              const specificRegion = {};
+              const regionDataFirstYearMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                  .map(d => d.ElectionYear)
+              );
+              const regionDataFirstMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              const regionDataLastYearMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear > 20005)
+                  .map(d => d.ElectionYear)
+              );
+              const regionDataLastMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear > 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              specificRegion['Region'] = region;
+              specificRegion['FirstScore'] = regionDataFirstMean;
+              specificRegion['SecondScore'] = regionDataLastMean;
+              specificRegion['MeanScore'] = mean([regionDataFirstMean, regionDataLastMean]);
+              regionData.push(specificRegion);
+            });
+            // console.log(regionData);
+            var chart = document.getElementById('RegionsBarChart');
+            const regionDataR = groupBy(regionData, 'Region');
+            const regionDataV1 = groupBy(regionData, 'FirstScore');
+            const regionDataV2 = groupBy(regionData, 'SecondScore');
+            const regionDataM = groupBy(regionData, 'MeanScore');
+            // console.log(regionDataR);
+            var regionsBarChart = new Chart(chart, {
               type: 'bar',
               data: {
-                  labels: Object.keys(regionDataR),
-                  datasets: [{
-                      label: 'Political Leaning First Election',
-                      data: Object.keys(regionDataV1),
-                      backgroundColor: [
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(255, 99, 132, 0.2)'
-                      ],
-                      borderColor: [
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(255, 99, 132, 1)'
-                      ],
-                      borderWidth: 1
+                labels: Object.keys(regionDataR),
+                datasets: [
+                  {
+                    label: 'Political Leaning First Election',
+                    data: Object.keys(regionDataV1),
+                    backgroundColor: [
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 99, 132, 0.2)',
+                      'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
                   },
                   {
                     label: 'Political Leaning Last Election',
-                      data: Object.keys(regionDataV2),
-                      backgroundColor: [
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(54, 162, 235, 0.2)'
-                      ],
-                      borderColor: [
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(54, 162, 235, 1)'
-                      ],
-                      borderWidth: 1
+                    data: Object.keys(regionDataV2),
+                    backgroundColor: [
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                      'rgba(54, 162, 235, 0.2)'
+                    ],
+                    borderColor: [
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(54, 162, 235, 1)',
+                      'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
                   },
                   {
                     label: 'Mean Political Leaning',
-                      data: Object.keys(regionDataM),
-                      backgroundColor: [
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(75, 192, 192, 0.2)'
-                      ],
-                      borderColor: [
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(75, 192, 192, 1)'
-                      ],
-                      borderWidth: 1
-                  }]
+                    data: Object.keys(regionDataM),
+                    backgroundColor: [
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(75, 192, 192, 0.2)'
+                    ],
+                    borderColor: [
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                  }
+                ]
               },
               options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero: true
-                          },
-                          scaleLabel: {
-                            display: true,
-                            labelString: 'Weighted Probability Score'
-                          }
-                      }],
-                      xAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Regions'
-                        }
-                      }]
-                  }
+                scales: {
+                  yAxes: [
+                    {
+                      ticks: {
+                        beginAtZero: true
+                      },
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Weighted Probability Score'
+                      }
+                    }
+                  ],
+                  xAxes: [
+                    {
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Regions'
+                      }
+                    }
+                  ]
+                }
               }
-          });
+            });
 
-          function toggleParties() {
+            function toggleParties() {
               myData = [3, 5, 9, 14, 40, 102];
               regionsBarChart.data.datasets[0].data = myData;
               regionsBarChart.update();
-          }
-        };
-        req.send();
-
-        return countryData;
-      }
-
-      const countryData = getElectionsData();
-
-    </script>
-
-    <!-- Map 1 (Joe) -->
-    <div id="container" style="width: 60%; float: left">
-      <div><strong>Map with Regions Highlighted</strong></div>
-      <div id="switch-container">
-        First Election
-        <label class="switch">
-          <input type="checkbox" id="first-last-switch" onclick="drawScatter1()">
-          <span class="slider round"></span>
-        </label>
-        Last Election
-      </div>
-      <canvas id="MapAllRegions"></canvas>
-    </div>
-    <script>
-      const drawScatter1 = () => {
-        // determine whether user has selected first or last election
-        const selectedFirst = !document.getElementById('first-last-switch').checked;
-
-        let req = new XMLHttpRequest();
-        let countryData = null;
-        
-        req.open("GET", "https://api.jsonbin.io/b/5cfa90ecd2127723845da142", true);
-        req.setRequestHeader("secret-key", SECRETKEY);
-        req.onload  = function() {
-          var jsonResponse = req.response;
-          countryData = JSON.parse(jsonResponse);
-          const regions = [...new Set(countryData.map(d => d.Region))];
-          const regionData = [];
-
-          regions.forEach(region => {
-            const specificRegion = {};
-            const regionDataFirstYearMean = mean(
-              countryData.filter(d => d.Region === region && d.ElectionYear <= 2005).map(d => d.ElectionYear)
-            );
-            const regionDataFirstMean = mean(
-              countryData
-                .filter(d => d.Region === region && d.ElectionYear <= 2005)
-                .map(d => d.WeightedElectionScore)
-            );
-            const regionDataLastYearMean = mean(
-              countryData.filter(d => d.Region === region && d.ElectionYear > 20005).map(d => d.ElectionYear)
-            );
-            const regionDataLastMean = mean(
-              countryData
-                .filter(d => d.Region === region && d.ElectionYear > 2005)
-                .map(d => d.WeightedElectionScore)
-            );
-            specificRegion['Region'] = region;
-            specificRegion['FirstScore'] = regionDataFirstMean;
-            specificRegion['SecondScore'] = regionDataLastMean;
-            regionData.push(specificRegion);
-          });
-          // console.log(regionData);
-          var chart = document.getElementById("RegionsBarChart");
-          const regionDataR = groupBy(regionData, 'Region');
-          const regionDataV1 = groupBy(regionData, 'FirstScore');
-          const regionDataV2 = groupBy(regionData, 'SecondScore');
-
-          // draw chart
-          console.log(selectedFirst)
-          const chartNode = document.getElementById("MapAllRegions");
-          const scatterPlot = new Chart(chartNode, {
-            type: 'scatter',
-            data: {
-              datasets: [{
-                label: `Political Leaning ${selectedFirst ? 'First Election' : 'Last Election'}`,
-                data: selectedFirst ? Object.values(regionDataR).map(x => x[0].FirstScore)
-                  : Object.values(regionDataR).map(x => x[0].SecondScore)
-              }],
-              labels: Object.keys(regionDataR)
-            },
-            options: {
-              scales: {
-                xAxes: [{
-                  type: 'category',
-                  position: 'bottom',
-                  ticks: {
-                    min: 'Eastern Europe',
-                    max: 'Middle East'
-                  }
-                }]
-              }
             }
-          })
+          };
+          req.send();
+
+          return countryData;
         }
 
-        req.send()
-      }
+        const countryData = getElectionsData();
+      </script>
 
-      drawScatter1();
-    </script>
+      <hr />
+
+      <!-- Map 1 (Joe) -->
+      <div class="vis-group">
+        <!-- Joe fill this part with real text -->
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
+        nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
+        amet laudantium consectetur provident asperiores beatae blanditiis! Dolorum voluptate fuga
+        repudiandae. Blanditiis dicta tempora corrupti perspiciatis animi quis, quos quibusdam veritatis
+        soluta sunt corporis est dolorum totam magnam labore ut dolore laboriosam saepe harum nesciunt. Ipsa,
+        eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
+        numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
+        nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
+        <div class="vis">
+          <div class="vis-title">Map with Regions Highlighted</div>
+          <div class="vis-switch">
+            <div style="background-color: white; align-self: center">First Election</div>
+            <label class="switch">
+              <input type="checkbox" id="first-last-switch" onclick="drawScatter1()" />
+              <span class="slider round"></span>
+            </label>
+            <div style="background-color: white; align-self: center">Last Election</div>
+          </div>
+          <canvas id="MapAllRegions"></canvas>
+        </div>
+      </div>
+      <script>
+        const drawScatter1 = () => {
+          // determine whether user has selected first or last election
+          const selectedFirst = !document.getElementById('first-last-switch').checked;
+
+          let req = new XMLHttpRequest();
+          let countryData = null;
+
+          req.open('GET', 'https://api.jsonbin.io/b/5cfa90ecd2127723845da142', true);
+          req.setRequestHeader('secret-key', SECRETKEY);
+          req.onload = function() {
+            var jsonResponse = req.response;
+            countryData = JSON.parse(jsonResponse);
+            const regions = [...new Set(countryData.map(d => d.Region))];
+            const regionData = [];
+
+            regions.forEach(region => {
+              const specificRegion = {};
+              const regionDataFirstYearMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                  .map(d => d.ElectionYear)
+              );
+              const regionDataFirstMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              const regionDataLastYearMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear > 20005)
+                  .map(d => d.ElectionYear)
+              );
+              const regionDataLastMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear > 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              specificRegion['Region'] = region;
+              specificRegion['FirstScore'] = regionDataFirstMean;
+              specificRegion['SecondScore'] = regionDataLastMean;
+              regionData.push(specificRegion);
+            });
+            // console.log(regionData);
+            var chart = document.getElementById('RegionsBarChart');
+            const regionDataR = groupBy(regionData, 'Region');
+            const regionDataV1 = groupBy(regionData, 'FirstScore');
+            const regionDataV2 = groupBy(regionData, 'SecondScore');
+
+            // draw chart
+            console.log(selectedFirst);
+            const chartNode = document.getElementById('MapAllRegions');
+            const scatterPlot = new Chart(chartNode, {
+              type: 'scatter',
+              data: {
+                datasets: [
+                  {
+                    label: `Political Leaning ${selectedFirst ? 'First Election' : 'Last Election'}`,
+                    data: selectedFirst
+                      ? Object.values(regionDataR).map(x => x[0].FirstScore)
+                      : Object.values(regionDataR).map(x => x[0].SecondScore)
+                  }
+                ],
+                labels: Object.keys(regionDataR)
+              },
+              options: {
+                scales: {
+                  xAxes: [
+                    {
+                      type: 'category',
+                      position: 'bottom',
+                      ticks: {
+                        min: 'Eastern Europe',
+                        max: 'Middle East'
+                      }
+                    }
+                  ]
+                }
+              }
+            });
+          };
+
+          req.send();
+        };
+
+        drawScatter1();
+      </script>
+    </div>
   </body>
 </html>

@@ -1,4 +1,5 @@
 # Explorables / Explainables
+
 ## CMSC 239 Data Visualization - P2
 
 In this project we will dive head first into the burgeoning world of visualization enhanced articles often called explorables or explainables (those terms have slightly different meanings but we are indifferent). Through this type of web page the user is told a story through a mixture of text and visualization in a compelling fashion. There is a lot of excitement in this area because it offers a intuitive view into complex and technical topics. It can push people to try to understand things they've never considered (or just never understood) before.
@@ -9,9 +10,8 @@ The output of this work will be a public facing web page hosted on github pages.
 
 0. Make sure all members of your group have github account
 1. One person should clone or fork this repo (https://github.com/mcnuttandrew/cmsc-239-project-2), add the other members as contributors via the settings tab. If you are uncomfortable with having this code be public you can make staff contributors as well so we can look at the code. Our github ids are: kindlmann, mcnuttandrew, lik11, and trihuynh88.
-2. ¡WRITE YOUR PROJECT!
-3. When you are ready to put your web page up (probably make sure you can do this right from the beginning), simply run our deploy script via npm run deploy which push everything straight onto your github pages. If you are unsure if your build will work, then you can try running npm run trial-deploy which does everything except actually push to github. We find that it is effective to run npm run trial-deploy, and then do something like live-server or simple python http server to check that you page will be read correctly.
-
+1. ¡WRITE YOUR PROJECT!
+1. When you are ready to put your web page up (probably make sure you can do this right from the beginning), simply run our deploy script via npm run deploy which push everything straight onto your github pages. If you are unsure if your build will work, then you can try running npm run trial-deploy which does everything except actually push to github. We find that it is effective to run npm run trial-deploy, and then do something like live-server or simple python http server to check that you page will be read correctly.
 
 ## Requirements
 
@@ -29,7 +29,6 @@ These charts should be meaningful different and should each individually add to 
 
 - In the p2 folder on svn you will turn in a short txt file that says: the url of web page, the url of your code (again if your code is private you must add the course staff to the repo), and a short description of who did what in your project.
 
-
 ## Logistics
 
 - You are allowed to install any additional packages/libraries you wish, just make sure your webpage works. We strongly encourage you to use react as the basis of your project, though this is not a hard requirement. You are welcome to use any tooling you wish, just know that the course staff will unlikely be able to help you if you stray too far from the basic setup.
@@ -39,17 +38,21 @@ These charts should be meaningful different and should each individually add to 
 - You will not need to seek approval from us on your choice of topic. We are delighted to give advice on visualizations or topics of your article, but there will be no formal step in this process.
 
 ## Examples
+
 On the simpler side
+
 - The Barnes-Hut Approximation https://jheer.github.io/barnes-hut/
 - Traveling Salesman Algorithms https://cse442-17f.github.io/Traveling-Salesman-Algorithms/
 - Markov chains http://setosa.io/blog/2014/07/26/markov-chains/ (also most things on here http://setosa.io/ev/)
 - Why Momentum Really Works https://distill.pub/2017/momentum/ (though this is quire a bit longer than expected)
 
 On the fancier side
+
 - Craft beer — so hot right now. But what city is the microbrew capital of the US? https://pudding.cool/2017/04/beer/
 - The Beginner's Guide to Dimensionality Reduction https://idyll.pub/post/dimensionality-reduction-293e465c2a3443e8941b016d/
 
 General sources
+
 - https://idyll-lang.org/gallery
 - https://pudding.cool/
 
@@ -57,14 +60,13 @@ You should not feel obligated to do elaborate scrolly telling interactions.
 
 ## Some cool tools
 
-*Charts*
+_Charts_
 
 - React-vis (https://uber.github.io/react-vis/) We've installed react-vis as the default charting library in this project, though you are welcome to use others.
 - Semiotic: this looks cool (https://semiotic.nteract.io/) though we have no experience with it.
 - d3 itself: making d3 play nice with react takes a little bit of work but it can certainly be done. There will likely be a homework covering this very topic.
 
-
-*Maps*
+_Maps_
 
 If you are considering doing a map based visualization, there are a bunch of powerful web tools that go way beyond the rudimentary svg manipulation in d3-geo. Here's a brief interview of some good tools
 
