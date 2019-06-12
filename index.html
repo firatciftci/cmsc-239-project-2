@@ -6,10 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link href="main.css"  type="text/css" rel="stylesheet" />
-    <script src="src/utils.js"></script>
     <script src="bundle.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <script type="text/javascript" src="src/components/regions-barchart.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/react-vis/dist/style.css">
   </head>
   <body>
@@ -227,33 +225,91 @@
 
     <!-- Map 1 (Joe) -->
     <div id="container" style="width: 60%; float: left">
-      <strong>Map with Regions Highlighted</strong>
+      <div><strong>Map with Regions Highlighted</strong></div>
+      <div id="switch-container">
+        First Election
+        <label class="switch">
+          <input type="checkbox" id="first-last-switch" onclick="drawScatter1()">
+          <span class="slider round"></span>
+        </label>
+        Last Election
+      </div>
       <canvas id="MapAllRegions"></canvas>
     </div>
-
     <script>
       const drawScatter1 = () => {
-        const chartNode = document.getElementById("MapAllRegions");
-        const scatterPlot = new Chart(chartNode, {
-          type: 'scatter',
-          data: {
-            datasets: [{
-              label: 'Dataset 1',
-              data: [{
-                x: 5,
-                y: 10
-              }]
-            }]
-          },
-          options: {
-            scales: {
-              xAxes: [{
-                type: 'category',
-                position: 'bottom'
-              }]
+        // determine whether user has selected first or last election
+        const selectedFirst = !document.getElementById('first-last-switch').checked;
+
+        let req = new XMLHttpRequest();
+        let countryData = null;
+        
+        req.open("GET", "https://api.jsonbin.io/b/5cfa90ecd2127723845da142", true);
+        req.setRequestHeader("secret-key", SECRETKEY);
+        req.onload  = function() {
+          var jsonResponse = req.response;
+          countryData = JSON.parse(jsonResponse);
+          const regions = [...new Set(countryData.map(d => d.Region))];
+          const regionData = [];
+
+          regions.forEach(region => {
+            const specificRegion = {};
+            const regionDataFirstYearMean = mean(
+              countryData.filter(d => d.Region === region && d.ElectionYear <= 2005).map(d => d.ElectionYear)
+            );
+            const regionDataFirstMean = mean(
+              countryData
+                .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                .map(d => d.WeightedElectionScore)
+            );
+            const regionDataLastYearMean = mean(
+              countryData.filter(d => d.Region === region && d.ElectionYear > 20005).map(d => d.ElectionYear)
+            );
+            const regionDataLastMean = mean(
+              countryData
+                .filter(d => d.Region === region && d.ElectionYear > 2005)
+                .map(d => d.WeightedElectionScore)
+            );
+            specificRegion['Region'] = region;
+            specificRegion['FirstScore'] = regionDataFirstMean;
+            specificRegion['SecondScore'] = regionDataLastMean;
+            regionData.push(specificRegion);
+          });
+          // console.log(regionData);
+          var chart = document.getElementById("RegionsBarChart");
+          const regionDataR = groupBy(regionData, 'Region');
+          const regionDataV1 = groupBy(regionData, 'FirstScore');
+          const regionDataV2 = groupBy(regionData, 'SecondScore');
+
+          // draw chart
+          console.log(selectedFirst)
+          const chartNode = document.getElementById("MapAllRegions");
+          const scatterPlot = new Chart(chartNode, {
+            type: 'scatter',
+            data: {
+              datasets: [{
+                label: `Political Leaning ${selectedFirst ? 'First Election' : 'Last Election'}`,
+                data: selectedFirst ? Object.values(regionDataR).map(x => x[0].FirstScore)
+                  : Object.values(regionDataR).map(x => x[0].SecondScore)
+              }],
+              labels: Object.keys(regionDataR)
+            },
+            options: {
+              scales: {
+                xAxes: [{
+                  type: 'category',
+                  position: 'bottom',
+                  ticks: {
+                    min: 'Eastern Europe',
+                    max: 'Middle East'
+                  }
+                }]
+              }
             }
-          }
-        })
+          })
+        }
+
+        req.send()
       }
 
       drawScatter1();
