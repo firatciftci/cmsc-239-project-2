@@ -23,9 +23,20 @@
         </div>
       </div>
 
-      <div class="vis-text">Since the beginning of the millennium, the world has been rapidly changing. From technology to politics, every realm of the human life has been shifting and readjusting itself to a more globalized and connected world. With these changes, the political views and ideologies of people have been getting affected as well. For the last few years, the media has been continuously focusing on one major phenomenon: the rise of right-wing politics. Although this topic has been getting a lot of coverage, we were curious regarding the validity of such claim. Thus, we decided to analyze election data from the start of the millennium in order to decisively see how the political alignment of people has shifted. In our research and analysis, we focused on a few broad regions: North America, Europe, and the Middle East. This webpage includes several visualizations that display some of our core findings, with more information about such ideas above each visualization.</div>
+      <div class="vis-text">
+        Since the beginning of the millennium, the world has been rapidly changing. From technology to
+        politics, every realm of the human life has been shifting and readjusting itself to a more globalized
+        and connected world. With these changes, the political views and ideologies of people have been
+        getting affected as well. For the last few years, the media has been continuously focusing on one
+        major phenomenon: the rise of right-wing politics. Although this topic has been getting a lot of
+        coverage, we were curious regarding the validity of such claim. Thus, we decided to analyze election
+        data from the start of the millennium in order to decisively see how the political alignment of people
+        has shifted. In our research and analysis, we focused on a few broad regions: North America, Europe,
+        and the Middle East. This webpage includes several visualizations that display some of our core
+        findings, with more information about such ideas above each visualization.
+      </div>
 
-      <hr>
+      <hr />
 
       <!-- Bar (David) -->
       <div class="vis-group">
@@ -61,6 +72,9 @@
       </div>
       <script>
         const SECRETKEY = '$2a$10$95O3pYS8s40pMgpxV.LKI.n5pC9JTNFa3MODMZzfDG2JAZ3mhrIFe';
+        let req = new XMLHttpRequest();
+        req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
+        req.setRequestHeader('secret-key', SECRETKEY);
 
         function mean(arr) {
           return arr.reduce((p, c, _, a) => p + c / a.length, 0);
@@ -81,12 +95,8 @@
         }
 
         function getElectionsData(region) {
-          let req = new XMLHttpRequest();
-
           let countryData = null;
 
-          req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
-          req.setRequestHeader('secret-key', SECRETKEY);
           req.onload = function() {
             var jsonResponse = req.response;
             countryData = JSON.parse(jsonResponse);
@@ -115,7 +125,6 @@
             const regionDataM = groupBy(regionData, 'MeanScore');
 
             console.log(regionDataM);
-
 
             const regionsBarChart = new Chart(chart, {
               type: 'bar',
@@ -368,15 +377,15 @@
         </div>
       </div>
       <script>
-        const drawScatter1 = () => {
+        req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
+        req.setRequestHeader('secret-key', SECRETKEY);
+
+        function drawScatter1() {
           // determine whether user has selected first or last election
           const selectedFirst = !document.getElementById('first-last-switch').checked;
 
-          let req = new XMLHttpRequest();
           let countryData = null;
 
-          req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
-          req.setRequestHeader('secret-key', SECRETKEY);
           req.onload = function() {
             var jsonResponse = req.response;
             countryData = JSON.parse(jsonResponse);
