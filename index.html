@@ -112,7 +112,7 @@
                 datasets: [
                   {
                     label: 'Political Leaning First Election',
-                    data: Object.keys(regionDataV1),
+                    data: Object.keys(regionDataV1).map(x => parseFloat(x).toFixed(2)),
                     backgroundColor: [
                       'rgba(255, 99, 132, 0.2)',
                       'rgba(255, 99, 132, 0.2)',
@@ -143,7 +143,7 @@
                   },
                   {
                     label: 'Political Leaning Last Election',
-                    data: Object.keys(regionDataV2),
+                    data: Object.keys(regionDataV2).map(x => parseFloat(x).toFixed(2)),
                     backgroundColor: [
                       'rgba(54, 162, 235, 0.2)',
                       'rgba(54, 162, 235, 0.2)',
@@ -174,7 +174,7 @@
                   },
                   {
                     label: 'Mean Political Leaning',
-                    data: Object.keys(regionDataM),
+                    data: Object.keys(regionDataM).map(x => parseFloat(x).toFixed(2)),
                     backgroundColor: [
                       'rgba(75, 192, 192, 0.2)',
                       'rgba(75, 192, 192, 0.2)',
@@ -320,7 +320,6 @@
             const regionDataV2 = groupBy(regionData, 'SecondScore');
 
             // draw chart
-            console.log(selectedFirst);
             const chartNode = document.getElementById('MapAllRegions');
             const scatterPlot = new Chart(chartNode, {
               type: 'scatter',
@@ -329,8 +328,11 @@
                   {
                     label: `Political Leaning ${selectedFirst ? 'First Election' : 'Last Election'}`,
                     data: selectedFirst
-                      ? Object.values(regionDataR).map(x => x[0].FirstScore)
-                      : Object.values(regionDataR).map(x => x[0].SecondScore)
+                      ? Object.values(regionDataR).map(x => x[0].FirstScore.toFixed(2))
+                      : Object.values(regionDataR).map(x => x[0].SecondScore.toFixed(2)),
+                    backgroundColor: selectedFirst ? 'rgba(255, 100, 100, 1)' : 'rgba(100, 100, 255, 1)',
+                    radius: 7,
+                    hoverRadius: 10,
                   }
                 ],
                 labels: Object.keys(regionDataR)
