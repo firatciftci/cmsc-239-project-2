@@ -75,6 +75,32 @@ body {
   border-top-right-radius: 18px;
 }
 
+.vis-buttons {
+  background-color: white;
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 0.25rem;
+  margin-bottom: 0.25rem;
+  margin-left: 0.25rem;
+  margin-right: 0.2rem;
+}
+
+.vis-buttons > button {
+  cursor: pointer;
+  background-color: #333;
+  color: white;
+  border: none;
+  outline: 0;
+  border-radius: 10px;
+  padding: 0.25rem 0.5rem;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all .15s ease;
+}
+
+.vis-buttons > button:hover {
+  background-color: #555;
+}
+
 .vis-switch {
   grid-column: auto auto auto;
   grid-auto-flow: column;
