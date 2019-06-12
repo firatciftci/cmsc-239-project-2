@@ -1,0 +1,13 @@
+1) URL of web page: https://firatciftci.github.io/cmsc-239-project-2/
+
+2) URL of code: https://github.com/firatciftci/cmsc-239-project-2
+
+3) Who did what:
+  · Firat:
+    - WIP
+
+  · Joe:
+    - WIP
+
+  · David:
+    - WIP
