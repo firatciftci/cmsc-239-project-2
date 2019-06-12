@@ -98,13 +98,13 @@
               specificRegion['MeanScore'] = mean([regionDataFirstMean, regionDataLastMean]);
               regionData.push(specificRegion);
             });
-            // console.log(regionData);
+
             var chart = document.getElementById('RegionsBarChart');
             const regionDataR = groupBy(regionData, 'Region');
             const regionDataV1 = groupBy(regionData, 'FirstScore');
             const regionDataV2 = groupBy(regionData, 'SecondScore');
             const regionDataM = groupBy(regionData, 'MeanScore');
-            // console.log(regionDataR);
+
             var regionsBarChart = new Chart(chart, {
               type: 'bar',
               data: {
