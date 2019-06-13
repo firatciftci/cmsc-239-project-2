@@ -475,40 +475,42 @@
             const regionDataV1 = groupBy(regionData, 'FirstScore');
             const regionDataV2 = groupBy(regionData, 'SecondScore');
 
-            $('#MapAllRegions').remove();
-            $('#scatterVis').append('<canvas id="MapAllRegions"><canvas>');
-
             // draw chart
-            const chartNode = document.getElementById('MapAllRegions');
-            const scatterPlot = new Chart(chartNode, {
-              type: 'scatter',
-              data: {
-                datasets: [
-                  {
-                    label: 'Political Leaning First Election',
-                    data: Object.values(regionDataR).map(x => x[0].FirstScore.toFixed(2)),
-                    backgroundColor: 'rgba(255, 100, 100, 1)',
-                    radius: 7,
-                    hoverRadius: 10
-                  }
-                ],
-                labels: Object.keys(regionDataR)
-              },
-              options: {
-                scales: {
-                  xAxes: [
+            if (selectedFirst === true) {
+              $('#MapAllRegions').remove();
+              $('#scatterVis').append('<canvas id="MapAllRegions"><canvas>');
+
+              const chartNode = document.getElementById('MapAllRegions');
+              const scatterPlot = new Chart(chartNode, {
+                type: 'scatter',
+                data: {
+                  datasets: [
                     {
-                      type: 'category',
-                      position: 'bottom',
-                      ticks: {
-                        min: 'Eastern Europe',
-                        max: 'Middle East'
-                      }
+                      label: 'Political Leaning First Election',
+                      data: Object.values(regionDataR).map(x => x[0].FirstScore.toFixed(2)),
+                      backgroundColor: 'rgba(255, 100, 100, 1)',
+                      radius: 7,
+                      hoverRadius: 10
                     }
-                  ]
+                  ],
+                  labels: Object.keys(regionDataR)
+                },
+                options: {
+                  scales: {
+                    xAxes: [
+                      {
+                        type: 'category',
+                        position: 'bottom',
+                        ticks: {
+                          min: 'Eastern Europe',
+                          max: 'Middle East'
+                        }
+                      }
+                    ]
+                  }
                 }
-              }
-            });
+              });
+            }
 
             if (selectedFirst === false) {
               $('#MapAllRegions').remove();
@@ -556,7 +558,7 @@
 
       <hr />
 
-      <!-- Pie 1 (David) -->
+      <!-- Horizontal Bar (David) -->
       <div class="vis-group">
         <!-- David fill this part with real text -->
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
@@ -567,7 +569,7 @@
         eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
         numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
         nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
-        <div class="vis">
+        <div id="horizontalVis" class="vis">
           <div class="vis-title">Political Shifts in 54 Countries</div>
           <div class="vis-switch">
             <div style="background-color: white; align-self: center">Group By Region</div>
@@ -576,8 +578,7 @@
               <label for="checkbox"></label>
             </div>
           </div>
-          <p></p>
-          <canvas id="PieChartRegions"></canvas>
+          <canvas id="HorizontalBarChart"></canvas>
         </div>
       </div>
       <script>
@@ -620,9 +621,11 @@
                   .filter(d => d.Region === region && d.ElectionYear > 2005)
                   .map(d => d.WeightedElectionScore)
               );
+
               specificRegion['Region'] = region;
               specificRegion['FirstScore'] = regionDataFirstMean;
               specificRegion['SecondScore'] = regionDataLastMean;
+
               const absRegionScore = Math.abs(regionDataLastMean - regionDataFirstMean);
               if (absRegionScore < 3) {
                 specificRegion['Moved'] = 1;
@@ -680,48 +683,109 @@
             }, {});
 
             // draw chart
-            const chartNode = document.getElementById('PieChartRegions');
-            var regionsBarChart = new Chart(chartNode, {
-              type: 'bar',
-              data: {
-                labels: useDefault ? Object.keys(countryShifts) : Object.keys(regionShifts),
-                datasets: [
-                  {
-                    label: useDefault ? '# of Countries' : '# of Regions',
-                    data: useDefault ? Object.values(countryShifts) : Object.values(regionShifts),
-                    backgroundColor: ['#e6194b', '#3cb44b', '#ffe119'],
-                    borderWidth: 1
-                  }
-                ]
-              },
-              options: {
-                scales: {
-                  yAxes: [
+            if (useDefault === true) {
+              $('#HorizontalBarChart').remove();
+              $('#horizontalVis').append('<canvas id="HorizontalBarChart"><canvas>');
+
+              const chartNode = document.getElementById('HorizontalBarChart');
+              var regionsBarChart = new Chart(chartNode, {
+                type: 'horizontalBar',
+                data: {
+                  labels: useDefault ? Object.keys(countryShifts) : Object.keys(regionShifts),
+                  datasets: [
                     {
-                      ticks: {
-                        beginAtZero: true,
-                        callback: function(value) {if (value % 1 === 0) {return value;}}
-                      },
-                      scaleLabel: {
-                        display: true,
-                        labelString: useDefault ? 'Number of Countries' : 'Number of Regions'
-                      }
-                    }
-                  ],
-                  xAxes: [
-                    {
-                      scaleLabel: {
-                        display: false,
-                        labelString: ''
-                      }
+                      label: 'Number of Countries',
+                      data: Object.values(countryShifts),
+                      backgroundColor: ['#e6194b', '#3cb44b', '#ffe119'],
+                      borderWidth: 1
                     }
                   ]
                 },
-                legend: {
-                  display: false
+                options: {
+                  scales: {
+                    xAxes: [
+                      {
+                        ticks: {
+                          beginAtZero: true,
+                          callback: function(value) {
+                            if (value % 1 === 0) {
+                              return value;
+                            }
+                          }
+                        },
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Number of Countries'
+                        }
+                      }
+                    ],
+                    yAxes: [
+                      {
+                        scaleLabel: {
+                          display: false,
+                          labelString: ''
+                        }
+                      }
+                    ]
+                  },
+                  legend: {
+                    display: false
+                  }
                 }
-              }
-            });
+              });
+            }
+
+            if (useDefault === false) {
+              $('#HorizontalBarChart').remove();
+              $('#horizontalVis').append('<canvas id="HorizontalBarChart"><canvas>');
+
+              const chartNode = document.getElementById('HorizontalBarChart');
+              var regionsBarChart = new Chart(chartNode, {
+                type: 'horizontalBar',
+                data: {
+                  labels: useDefault ? Object.keys(countryShifts) : Object.keys(regionShifts),
+                  datasets: [
+                    {
+                      label: 'Number of Regions',
+                      data: Object.values(regionShifts),
+                      backgroundColor: ['#e6194b', '#3cb44b', '#ffe119'],
+                      borderWidth: 1
+                    }
+                  ]
+                },
+                options: {
+                  scales: {
+                    xAxes: [
+                      {
+                        ticks: {
+                          beginAtZero: true,
+                          callback: function(value) {
+                            if (value % 1 === 0) {
+                              return value;
+                            }
+                          }
+                        },
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Number of Regions'
+                        }
+                      }
+                    ],
+                    yAxes: [
+                      {
+                        scaleLabel: {
+                          display: false,
+                          labelString: ''
+                        }
+                      }
+                    ]
+                  },
+                  legend: {
+                    display: false
+                  }
+                }
+              });
+            }
           };
 
           req.send();
