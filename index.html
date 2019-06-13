@@ -38,7 +38,7 @@
 
       <hr />
 
-      <!-- Bar (David) -->
+      <!-- Bar (Firat) -->
       <div class="vis-group">
         <div class="vis-text">
           We begin with looking at the world in geopolitical sections. The exact specifications of each region
@@ -63,7 +63,7 @@
           will give us more information regarding exact political shifts for each region.
         </div>
         <div id="barChart1Vis" class="vis">
-          <div class="vis-title">Mean Political Leaning by Region</div>
+          <div class="vis-title">Mean Political Alignment by Region</div>
           <div class="vis-buttons">
             <button id="reset" style="background-color: #333" onclick="regionClick(this.id)">Reset</button>
             <button
@@ -428,7 +428,10 @@
         The visualization below gives us a better idea of how each region has shifted in terms of their
         political alignment. Each point in the scatter plot gives exact information about each region's
         overall political alignment in their first and last elections. The toggle above the visualization
-        enables us to switch between the first and last election data; as the layout stays the same be
+        enables us to switch between the first and last election data; as the layout stays the same between
+        the scatterplot of the first and last election data, we can see how a region has changed in terms of
+        their alignment. The visualization below this one gives us a larger picture into overall shift of
+        regions and countries.
         <div id="scatterVis" class="vis">
           <div class="vis-title">Political Alignment of Regions in 2000 and 2018</div>
           <div class="vis-switch">
@@ -585,7 +588,7 @@
         numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
         nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
         <div id="horizontalVis" class="vis">
-          <div class="vis-title">How Many Countries/Regions Have Politically Shifted?</div>
+          <div class="vis-title">How many countries/regions have politically shifted?</div>
           <div class="vis-switch">
             <div style="background-color: white; align-self: center">Group By Region:</div>
             <div class="round">
@@ -942,9 +945,10 @@
 
         drawBarChart1();
       </script>
-    </div>
 
-    <div class="vis-group">
+      <hr>
+
+      <div class="vis-group">
         <!-- David fill this part with real text -->
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
         nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
@@ -1012,7 +1016,7 @@
                 x.ElectionYear !== leftMostLastElection.ElectionYear
             );
 
-            console.log(leftMostLastElection, leftMostFirstElection)
+            console.log(leftMostLastElection, leftMostFirstElection);
 
             // get votes by denomination (center, center right, etc.)
             const votingDataLast = {
