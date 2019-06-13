@@ -4,10 +4,20 @@
 
 3) Who did what:
   · Firat:
-    - WIP
+    - First bar visualization and interactivity
+    - All textual information surrounding the visualizations
+    - HTML/CSS design and layout
+    - Idea for the data
+    - Collection of data
 
   · Joe:
-    - WIP
+    - Scatter plot
+    - Last two multi-bar plots
+    - Collection of data
+    - Analysis and processing of the data
 
   · David:
-    - WIP
+    - Horizontal bar visualization
+    - Parts of the first bar visualization
+    - Collection of data
+    - JSON data hosting
