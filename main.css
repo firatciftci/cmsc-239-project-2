@@ -102,10 +102,6 @@ body {
   background-color: #555 !important;
 }
 
-/* .vis-buttons > button#Reset {
-  background-color: red;
-} */
-
 .vis-switch {
   grid-column: auto auto auto;
   grid-auto-flow: column;

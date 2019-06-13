@@ -424,14 +424,15 @@
 
       <!-- Scatter (Joe) -->
       <div class="vis-group">
-        <!-- Joe fill this part with real text -->
-        The visualization below gives us a better idea of how each region has shifted in terms of their
-        political alignment. Each point in the scatter plot gives exact information about each region's
-        overall political alignment in their first and last elections. The toggle above the visualization
-        enables us to switch between the first and last election data; as the layout stays the same between
-        the scatterplot of the first and last election data, we can see how a region has changed in terms of
-        their alignment. The visualization below this one gives us a larger picture into overall shift of
-        regions and countries.
+        <div class="vis-text">
+          The visualization below gives us a better idea of how each region has shifted in terms of their
+          political alignment. Each point in the scatter plot gives exact information about each region's
+          overall political alignment in their first and last elections. The toggle above the visualization
+          enables us to switch between the first and last election data; as the layout stays the same between
+          the scatterplot of the first and last election data, we can see how a region has changed in terms of
+          their alignment. The visualization below this one gives us a larger picture into overall shift of
+          regions and countries.
+        </div>
         <div id="scatterVis" class="vis">
           <div class="vis-title">Political Alignment of Regions in 2000 and 2018</div>
           <div class="vis-switch">
@@ -578,15 +579,23 @@
 
       <!-- Horizontal Bar (David) -->
       <div class="vis-group">
-        <!-- David fill this part with real text -->
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
-        nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
-        amet laudantium consectetur provident asperiores beatae blanditiis! Dolorum voluptate fuga
-        repudiandae. Blanditiis dicta tempora corrupti perspiciatis animi quis, quos quibusdam veritatis
-        soluta sunt corporis est dolorum totam magnam labore ut dolore laboriosam saepe harum nesciunt. Ipsa,
-        eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
-        numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
-        nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
+        <div class="vis-text">
+          This horizontal bar chart sheds light onto a critical question we had from the beginning: Has there
+          been an increase in right-wing politics since the beginning of the millennium? From the
+          visualization, we can state that it would be really difficult to come to a conclusion a strong shift
+          toward right-wing politics. Although more countries have shifted right (24) than left (20), the
+          numbers are really close to each other; furthermore, when grouped by region through the checkbox on
+          top of the visualization, we see that an equal amount of regions for both left-wing and right-wing
+          shift (5).
+        </div>
+        <div class="vis-text" style="margin-top: 1rem">
+          However, one thing could be concluded: The world has been shifting more to the extremes, rather than
+          staying in the center and abiding to the status quo. Out of 54 countries that we have analyzed, only
+          10 have stayed the same throughout the 18-year period. All others have seen political polarization;
+          yet, we cannot make any value-judgments regarding this matter. A centrist would possibly find this
+          data worrying, while a more left- or right-leaning person could find this a step in the right
+          direction; it is all a matter of perspective.
+        </div>
         <div id="horizontalVis" class="vis">
           <div class="vis-title">How many countries/regions have politically shifted?</div>
           <div class="vis-switch">
@@ -815,17 +824,24 @@
       <hr />
 
       <div class="vis-group">
-        <!-- David fill this part with real text -->
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
-        nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
-        amet laudantium consectetur provident asperiores beatae blanditiis! Dolorum voluptate fuga
-        repudiandae. Blanditiis dicta tempora corrupti perspiciatis animi quis, quos quibusdam veritatis
-        soluta sunt corporis est dolorum totam magnam labore ut dolore laboriosam saepe harum nesciunt. Ipsa,
-        eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
-        numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
-        nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
+        <div class="vis-text">
+          It is time to focus more on specific countries. Amongst all the countries we have analyzed, we can
+          conclude that Ukraine is the one that has shifted right-wing the most. The visualization below gives
+          more information regarding the first and last elections of the 21<sup>st</sup> century for Ukraine.
+          The labels on top of the visualization are interactive; if clicked, they hide/show specific
+          elections, so that you can focus more on one election if needed. Moreover, hovering over each bar
+          plot gives more information regarding the percentage of votes gained by each political alignment. If
+          you are curious regarding what has been happening in Ukraine, including the reasons for such extreme
+          political shift,
+          <a
+            href="https://en.wikipedia.org/wiki/Politics_of_Ukraine#Political_parties_and_elections"
+            target="_blank"
+            style="font-weight: 1000"
+            >you can check out the Wikipedia page for Ukrainian politics</a
+          >.
+        </div>
         <div id="countryVis1" class="vis">
-          <div class="vis-title">Breakdown of Country Moving Most Right</div>
+          <div class="vis-title">Ukraine: The country that shifted the most toward the right</div>
           <canvas id="countryVisCanvas1"></canvas>
         </div>
       </div>
@@ -946,20 +962,20 @@
         drawBarChart1();
       </script>
 
-      <hr>
+      <hr />
 
       <div class="vis-group">
-        <!-- David fill this part with real text -->
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
-        nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
-        amet laudantium consectetur provident asperiores beatae blanditiis! Dolorum voluptate fuga
-        repudiandae. Blanditiis dicta tempora corrupti perspiciatis animi quis, quos quibusdam veritatis
-        soluta sunt corporis est dolorum totam magnam labore ut dolore laboriosam saepe harum nesciunt. Ipsa,
-        eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
-        numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
-        nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
+        <div class="vis-text">
+          Continuing along with our political analysis for specific countries, from the data we have gathered,
+          we can conclude that Mexico is the country that has encountered a left-wing shift the most. Similar
+          to the visualization above, the one below gives us information regarding the first and last
+          elections we have gathered. For more information about Mexican politics, you can check out
+          <a href="https://en.wikipedia.org/wiki/Politics_of_Mexico" target="_blank" style="font-weight: 1000"
+            >the relevant Wikipedia page</a
+          >.
+        </div>
         <div id="leftMostCountry" class="vis">
-          <div class="vis-title">Breakdown of Country Moving Most Left</div>
+          <div class="vis-title">Mexico: The country that shifted the most toward the left</div>
           <canvas id="leftMostCountryVis"></canvas>
         </div>
       </div>
@@ -1080,6 +1096,15 @@
 
         drawBarChart2();
       </script>
+
+      <hr />
+
+      <div class="vis-text">
+        Source:
+        <a href="http://psephos.adam-carr.net/" target="_blank" style="font-weight: 1000; padding-bottom: 2rem"
+          >Adam Carr's Election Archive</a
+        >
+      </div>
     </div>
   </body>
 </html>
