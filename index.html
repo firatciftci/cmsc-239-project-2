@@ -38,155 +38,6 @@
 
       <hr />
 
-      <!-- Scatter (Joe) -->
-      <div class="vis-group">
-        <!-- Joe fill this part with real text -->
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
-        nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
-        amet laudantium consectetur provident asperiores beatae blanditiis! Dolorum voluptate fuga
-        repudiandae. Blanditiis dicta tempora corrupti perspiciatis animi quis, quos quibusdam veritatis
-        soluta sunt corporis est dolorum totam magnam labore ut dolore laboriosam saepe harum nesciunt. Ipsa,
-        eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
-        numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
-        nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
-        <div id="scatterVis" class="vis">
-          <div class="vis-title">Political Alignment of Regions in 2000 and 2018</div>
-          <div class="vis-switch">
-            <div style="background-color: white; align-self: center">First Election (~2000)</div>
-            <label class="switch">
-              <input type="checkbox" id="first-last-switch" onclick="drawScatter1()" />
-              <span class="slider round"></span>
-            </label>
-            <div style="background-color: white; align-self: center">Last Election (~2018)</div>
-          </div>
-          <canvas id="MapAllRegions"></canvas>
-        </div>
-      </div>
-      <script>
-        const SECRETKEY = '$2a$10$95O3pYS8s40pMgpxV.LKI.n5pC9JTNFa3MODMZzfDG2JAZ3mhrIFe';
-
-        const drawScatter1 = () => {
-          // determine whether user has selected first or last election
-          const selectedFirst = !document.getElementById('first-last-switch').checked;
-
-          let countryData = null;
-
-          let req = new XMLHttpRequest();
-          req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
-          req.setRequestHeader('secret-key', SECRETKEY);
-          req.onload = function() {
-            var jsonResponse = req.response;
-            countryData = JSON.parse(jsonResponse);
-            const regions = [...new Set(countryData.map(d => d.Region))];
-            const regionData = [];
-
-            regions.forEach(region => {
-              const specificRegion = {};
-
-              const regionDataFirstMean = mean(
-                countryData
-                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
-                  .map(d => d.WeightedElectionScore)
-              );
-
-              const regionDataLastMean = mean(
-                countryData
-                  .filter(d => d.Region === region && d.ElectionYear > 2005)
-                  .map(d => d.WeightedElectionScore)
-              );
-              specificRegion['Region'] = region;
-              specificRegion['FirstScore'] = regionDataFirstMean;
-              specificRegion['SecondScore'] = regionDataLastMean;
-              regionData.push(specificRegion);
-            });
-
-            const regionDataR = groupBy(regionData, 'Region');
-            const regionDataV1 = groupBy(regionData, 'FirstScore');
-            const regionDataV2 = groupBy(regionData, 'SecondScore');
-
-            // draw chart
-            if (selectedFirst === true) {
-              $('#MapAllRegions').remove();
-              $('#scatterVis').append('<canvas id="MapAllRegions"><canvas>');
-
-              const chartNode = document.getElementById('MapAllRegions');
-              const scatterPlot = new Chart(chartNode, {
-                type: 'scatter',
-                data: {
-                  datasets: [
-                    {
-                      label: 'Political Leaning First Election',
-                      data: Object.values(regionDataR).map(x => x[0].FirstScore.toFixed(2)),
-                      backgroundColor: 'rgba(255, 100, 100, 1)',
-                      radius: 7,
-                      hoverRadius: 10
-                    }
-                  ],
-                  labels: Object.keys(regionDataR)
-                },
-                options: {
-                  scales: {
-                    xAxes: [
-                      {
-                        type: 'category',
-                        position: 'bottom',
-                        ticks: {
-                          min: 'Eastern Europe',
-                          max: 'Middle East'
-                        }
-                      }
-                    ]
-                  }
-                }
-              });
-            }
-
-            if (selectedFirst === false) {
-              $('#MapAllRegions').remove();
-              $('#scatterVis').append('<canvas id="MapAllRegions"><canvas>');
-
-              const chartNode = document.getElementById('MapAllRegions');
-
-              const scatterPlot = new Chart(chartNode, {
-                type: 'scatter',
-                data: {
-                  datasets: [
-                    {
-                      label: 'Political Leaning Last Election',
-                      data: Object.values(regionDataR).map(x => x[0].SecondScore.toFixed(2)),
-                      backgroundColor: 'rgba(100, 100, 255, 1)',
-                      radius: 7,
-                      hoverRadius: 10
-                    }
-                  ],
-                  labels: Object.keys(regionDataR)
-                },
-                options: {
-                  scales: {
-                    xAxes: [
-                      {
-                        type: 'category',
-                        position: 'bottom',
-                        ticks: {
-                          min: 'Eastern Europe',
-                          max: 'Middle East'
-                        }
-                      }
-                    ]
-                  }
-                }
-              });
-            }
-          };
-
-          req.send();
-        };
-
-        drawScatter1();
-      </script>
-
-      <hr />
-
       <!-- Bar (David) -->
       <div class="vis-group">
         <div class="vis-text">
@@ -282,6 +133,8 @@
         </div>
       </div>
       <script>
+        const SECRETKEY = '$2a$10$95O3pYS8s40pMgpxV.LKI.n5pC9JTNFa3MODMZzfDG2JAZ3mhrIFe';
+
         function mean(arr) {
           return arr.reduce((p, c, _, a) => p + c / a.length, 0);
         }
@@ -554,6 +407,153 @@
         }
 
         const countryData = getElectionsData();
+      </script>
+
+      <hr />
+
+      <!-- Scatter (Joe) -->
+      <div class="vis-group">
+        <!-- Joe fill this part with real text -->
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
+        nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
+        amet laudantium consectetur provident asperiores beatae blanditiis! Dolorum voluptate fuga
+        repudiandae. Blanditiis dicta tempora corrupti perspiciatis animi quis, quos quibusdam veritatis
+        soluta sunt corporis est dolorum totam magnam labore ut dolore laboriosam saepe harum nesciunt. Ipsa,
+        eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
+        numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
+        nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
+        <div id="scatterVis" class="vis">
+          <div class="vis-title">Political Alignment of Regions in 2000 and 2018</div>
+          <div class="vis-switch">
+            <div style="background-color: white; align-self: center">First Election (~2000)</div>
+            <label class="switch">
+              <input type="checkbox" id="first-last-switch" onclick="drawScatter1()" />
+              <span class="slider round"></span>
+            </label>
+            <div style="background-color: white; align-self: center">Last Election (~2018)</div>
+          </div>
+          <canvas id="MapAllRegions"></canvas>
+        </div>
+      </div>
+      <script>
+        const drawScatter1 = () => {
+          // determine whether user has selected first or last election
+          const selectedFirst = !document.getElementById('first-last-switch').checked;
+
+          let countryData = null;
+
+          let req = new XMLHttpRequest();
+          req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
+          req.setRequestHeader('secret-key', SECRETKEY);
+          req.onload = function() {
+            var jsonResponse = req.response;
+            countryData = JSON.parse(jsonResponse);
+            const regions = [...new Set(countryData.map(d => d.Region))];
+            const regionData = [];
+
+            regions.forEach(region => {
+              const specificRegion = {};
+
+              const regionDataFirstMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+
+              const regionDataLastMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear > 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              specificRegion['Region'] = region;
+              specificRegion['FirstScore'] = regionDataFirstMean;
+              specificRegion['SecondScore'] = regionDataLastMean;
+              regionData.push(specificRegion);
+            });
+
+            const regionDataR = groupBy(regionData, 'Region');
+            const regionDataV1 = groupBy(regionData, 'FirstScore');
+            const regionDataV2 = groupBy(regionData, 'SecondScore');
+
+            // draw chart
+            if (selectedFirst === true) {
+              $('#MapAllRegions').remove();
+              $('#scatterVis').append('<canvas id="MapAllRegions"><canvas>');
+
+              const chartNode = document.getElementById('MapAllRegions');
+              const scatterPlot = new Chart(chartNode, {
+                type: 'scatter',
+                data: {
+                  datasets: [
+                    {
+                      label: 'Political Leaning First Election',
+                      data: Object.values(regionDataR).map(x => x[0].FirstScore.toFixed(2)),
+                      backgroundColor: 'rgba(255, 100, 100, 1)',
+                      radius: 7,
+                      hoverRadius: 10
+                    }
+                  ],
+                  labels: Object.keys(regionDataR)
+                },
+                options: {
+                  scales: {
+                    xAxes: [
+                      {
+                        type: 'category',
+                        position: 'bottom',
+                        ticks: {
+                          min: 'Eastern Europe',
+                          max: 'Middle East'
+                        }
+                      }
+                    ]
+                  }
+                }
+              });
+            }
+
+            if (selectedFirst === false) {
+              $('#MapAllRegions').remove();
+              $('#scatterVis').append('<canvas id="MapAllRegions"><canvas>');
+
+              const chartNode = document.getElementById('MapAllRegions');
+
+              const scatterPlot = new Chart(chartNode, {
+                type: 'scatter',
+                data: {
+                  datasets: [
+                    {
+                      label: 'Political Leaning Last Election',
+                      data: Object.values(regionDataR).map(x => x[0].SecondScore.toFixed(2)),
+                      backgroundColor: 'rgba(100, 100, 255, 1)',
+                      radius: 7,
+                      hoverRadius: 10
+                    }
+                  ],
+                  labels: Object.keys(regionDataR)
+                },
+                options: {
+                  scales: {
+                    xAxes: [
+                      {
+                        type: 'category',
+                        position: 'bottom',
+                        ticks: {
+                          min: 'Eastern Europe',
+                          max: 'Middle East'
+                        }
+                      }
+                    ]
+                  }
+                }
+              });
+            }
+          };
+
+          req.send();
+        };
+
+        drawScatter1();
       </script>
 
       <hr />
