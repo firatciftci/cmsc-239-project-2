@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Ideological Shift In Elections Between 2000 & 2018</title>
+    <title>Political Shift In Elections Between 2000 & 2018</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -16,7 +16,7 @@
     <div class="content">
       <div class="title">
         <div class="title-main">
-          Ideological Shift In Elections Between 2000 & 2018
+          Political Shift In Elections Between 2000 & 2018
         </div>
         <div class="title-main-sub">
           Firat Ciftci · Joe Berusch · David Yaffe
@@ -41,15 +41,26 @@
       <!-- Bar (David) -->
       <div class="vis-group">
         <div class="vis-text">
-          The bar chart below allows the user to both hover over the individual bars in order to see more
-          exact values (for ratio comparisons) and change the datasets displayed by clicking on the legend. By
-          only displaying the political leanings in the first and last election, in at least 6 of the regions
-          – namely Western Europe, Southwestern Europe, Southern Europe, Central Asia, and Southwest Asia –
-          there has been a signficiant rise in their weighted election score between the first and last
-          election. A more positive weighted election score signals more right-wing politics and a more
-          negative score represents a more left-wing political leaning. In only 3 regions – Northern Europe,
-          Southeastern Europe, and North America – we saw a rise in left-wing politics. The last 3 regions –
-          Eastern Europe, Central Europe, and the Middle East – we saw no change.
+          We begin with looking at the world in geopolitical sections. The exact specifications of each region
+          that we have used can be found
+          <a
+            href="https://commons.wikimedia.org/wiki/File:Regions_of_Europe_based_on_CIA_world_factbook.png"
+            target="_blank"
+            style="font-weight: 1000"
+          >
+            here</a
+          >. The bar chart below displays the mean political alignment in each region between 2000-2018. On
+          the y-axis, positive (+) translates to right-wing aligment, and negative (-) means left-wing
+          aligment. Hovering over each bar plot gives more information regarding the exact numeral alignment
+          for specific regions. Furthermore, the regional buttons at the top of the visualization leads to
+          sub-visualizations for the countries in each region; for example, clicking on 'Western Europe' will
+          give more detailed information on the political alignment of all Western European countries.
+        </div>
+        <div class="vis-text" style="margin-top: 1rem">
+          This visualization can lead to one clear conclusion: Independent of election-specific changes, the
+          countries that we have analyzed have been more right-wing during the 21st century. There are eight
+          regions that are more right-wing, and only three that are more left-wing. The visualizations below
+          will give us more information regarding exact political shifts for each region.
         </div>
         <div id="barChart1Vis" class="vis">
           <div class="vis-title">Mean Political Leaning by Region</div>
@@ -191,7 +202,7 @@
                 labels: Object.keys(regionDataR),
                 datasets: [
                   {
-                    label: 'Mean Political Leaning',
+                    label: 'Mean Political Leaning of Region',
                     data: Object.keys(regionDataM).map(x => parseFloat(x).toFixed(2)),
                     backgroundColor: [
                       'rgba(166, 206, 227, 0.5)',
@@ -267,7 +278,7 @@
                   labels: Object.keys(countryDataC),
                   datasets: [
                     {
-                      label: 'Mean Political Leaning in Region',
+                      label: 'Mean Political Leaning of Country',
                       data: Object.keys(countryDataM).map(x => parseFloat(x).toFixed(2)),
                       backgroundColor: [
                         'rgba(166, 206, 227, 0.5)',
@@ -414,14 +425,10 @@
       <!-- Scatter (Joe) -->
       <div class="vis-group">
         <!-- Joe fill this part with real text -->
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
-        nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
-        amet laudantium consectetur provident asperiores beatae blanditiis! Dolorum voluptate fuga
-        repudiandae. Blanditiis dicta tempora corrupti perspiciatis animi quis, quos quibusdam veritatis
-        soluta sunt corporis est dolorum totam magnam labore ut dolore laboriosam saepe harum nesciunt. Ipsa,
-        eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
-        numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
-        nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
+        The visualization below gives us a better idea of how each region has shifted in terms of their
+        political alignment. Each point in the scatter plot gives exact information about each region's
+        overall political alignment in their first and last elections. The toggle above the visualization
+        enables us to switch between the first and last election data; as the layout stays the same be
         <div id="scatterVis" class="vis">
           <div class="vis-title">Political Alignment of Regions in 2000 and 2018</div>
           <div class="vis-switch">
@@ -507,7 +514,11 @@
                         }
                       }
                     ]
-                  }
+                  },
+                  legend: {
+                    onClick: e => e.stopPropagation()
+                  },
+                  animation: false
                 }
               });
             }
@@ -544,7 +555,11 @@
                         }
                       }
                     ]
-                  }
+                  },
+                  legend: {
+                    onClick: e => e.stopPropagation()
+                  },
+                  animation: false
                 }
               });
             }
@@ -793,9 +808,10 @@
 
         drawPieChart1();
       </script>
-    </div>
 
-    <div>
+      <hr />
+
+      <div class="vis-group">
         <!-- David fill this part with real text -->
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
         nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
@@ -805,9 +821,9 @@
         eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
         numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
         nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
-        <div id="horizontalVis" class="vis">
+        <div id="countryVis1" class="vis">
           <div class="vis-title">What countries received the most left votes?</div>
-          <canvas id="BarChart1"></canvas>
+          <canvas id="countryVisCanvas1"></canvas>
         </div>
       </div>
       <script>
@@ -853,28 +869,32 @@
               regionData.push(specificRegion);
             });
 
-            var chartNode = document.getElementById('RegionsBarChart');
+            var chartNode = document.getElementById('countryVisCanvas1');
 
             countryData.sort((a, b) => b.WeightedElectionScore - a.WeightedElectionScore);
             rightmostLastElection = countryData[0];
-            rightmostFirstElection = countryData.find(x => x.Country === rightmostLastElection.Country && x.ElectionYear !== rightmostLastElection.ElectionYear)
+            rightmostFirstElection = countryData.find(
+              x =>
+                x.Country === rightmostLastElection.Country &&
+                x.ElectionYear !== rightmostLastElection.ElectionYear
+            );
 
             // get votes by denomination (center, center right, etc.)
             const votingDataFirst = {
-              'Left': 29.7,
+              Left: 29.7,
               'Center Left': 0,
-              'Center': 5.9,
+              Center: 5.9,
               'Center Right': 0,
-              'Right': 55.7
-            }
+              Right: 55.7
+            };
             const votingDataLast = {
-              'Left': 11.8,
+              Left: 11.8,
               'Center Left': 0,
-              'Center': 0,
+              Center: 0,
               'Center Right': 0,
-              'Right': 84.4
-            }
-            console.log(Object.values(votingDataLast))
+              Right: 84.4
+            };
+            console.log(Object.values(votingDataLast));
 
             const barChart = new Chart(chartNode, {
               type: 'bar',
@@ -884,23 +904,26 @@
                   {
                     data: Object.values(votingDataFirst),
                     label: '2000 Election'
-                  }, {
+                  },
+                  {
                     data: Object.values(votingDataLast),
                     label: '2018 Election'
-                  }]
+                  }
+                ]
               },
               options: {
                 scales: {
-                  xAxes: [{
-                    scaleLabel: {
-                      display: true,
-                      labelString: 'Party Affiliation'
+                  xAxes: [
+                    {
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Party Affiliation'
+                      }
                     }
-                  }]
+                  ]
                 }
               }
-            })
-
+            });
           };
           req.send();
 
@@ -910,6 +933,5 @@
         drawBarChart1();
       </script>
     </div>
-
   </body>
 </html>
