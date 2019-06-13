@@ -121,8 +121,8 @@ function getElectionsData(regionInput) {
       const countryDataC = groupBy(countriesInRegion, 'Country');
       const countryDataM = groupBy(countriesInRegion, 'WeightedCountryScore');
 
-      document.getElementById('RegionsBarChart').remove();
-      document.getElementById('barChart1Vis').append('<canvas id="RegionsBarChart"><canvas>');
+      $('RegionsBarChart').remove();
+      $('barChart1Vis').append('<canvas id="RegionsBarChart"><canvas>');
 
       const countriesBarChart = new Chart(chart, {
         type: 'bar',
@@ -179,7 +179,7 @@ function getElectionsData(regionInput) {
               {
                 scaleLabel: {
                   display: true,
-                  labelString: `Countries in ${region}`
+                  labelString: `Countries in ${regionInput}`
                 }
               }
             ]
@@ -335,7 +335,131 @@ function drawScatter1() {
   req.send();
 }
 
+function drawPieChart1() {
+  // determine whether user has checked the box
+  const useDefault = !document.getElementById('checkbox2').checked;
+
+  const req = new XMLHttpRequest();
+  let countryData = null;
+
+  req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
+  req.setRequestHeader('secret-key', SECRETKEY);
+  req.onload = () => {
+    const jsonResponse = req.response;
+    countryData = JSON.parse(jsonResponse);
+    const regions = [...new Set(countryData.map(d => d.Region))];
+    const regionData = [];
+
+    regions.forEach(region => {
+      const specificRegion = {};
+
+      const regionDataFirstMean = mean(
+        countryData
+          .filter(d => d.Region === region && d.ElectionYear <= 2005)
+          .map(d => d.WeightedElectionScore)
+      );
+
+      const regionDataLastMean = mean(
+        countryData
+          .filter(d => d.Region === region && d.ElectionYear > 2005)
+          .map(d => d.WeightedElectionScore)
+      );
+      specificRegion.Region = region;
+      specificRegion.FirstScore = regionDataFirstMean;
+      specificRegion.SecondScore = regionDataLastMean;
+      const absRegionScore = Math.abs(regionDataLastMean - regionDataFirstMean);
+      if (absRegionScore < 3) {
+        specificRegion.Moved = 1;
+      } else if (regionDataLastMean > regionDataFirstMean) {
+        specificRegion.Moved = 2;
+      } else {
+        specificRegion.Moved = 0;
+      }
+      regionData.push(specificRegion);
+    });
+
+    const countryLabels = ['Shifted Left', 'Stayed Roughly the Same', 'Shifted Right'];
+
+    const groupedCountryData = groupBy(countryData, 'Country');
+    const groupedCountryDataCountries = Object.keys(groupedCountryData);
+
+    const countryShifts = groupedCountryDataCountries.reduce((total, countryName) => {
+      countryData = groupedCountryData[countryName];
+      const absScore = Math.abs(countryData[1].WeightedElectionScore - countryData[0].WeightedElectionScore);
+      if (absScore < 3) {
+        if (total[countryLabels[1]]) {
+          total[countryLabels[1]] += 1;
+        } else {
+          total[countryLabels[1]] = 1;
+        }
+      } else if (countryData[1].WeightedElectionScore > countryData[0].WeightedElectionScore) {
+        if (total[countryLabels[2]]) {
+          total[countryLabels[2]] += 1;
+        } else {
+          total[countryLabels[2]] = 1;
+        }
+      } else if (total[countryLabels[0]]) {
+        total[countryLabels[0]] += 1;
+      } else {
+        total[countryLabels[0]] = 1;
+      }
+      return total;
+    }, {});
+
+    const chart = document.getElementById('RegionsBarChart');
+    const regionDataR = groupBy(regionData, 'Region');
+    const regionDataV1 = groupBy(regionData, 'FirstScore');
+    const regionDataV2 = groupBy(regionData, 'SecondScore');
+    const regionDataMoved = groupBy(regionData, 'Moved');
+
+    const regionShifts = {'Shifted Left': 0, 'Stayed Roughly the Same': 0, 'Shifted Right': 0};
+
+    // draw chart
+    const chartNode = document.getElementById('PieChartRegions');
+    const regionsBarChart = new Chart(chartNode, {
+      type: 'bar',
+      data: {
+        labels: useDefault ? Object.keys(countryShifts) : Object.keys(regionShifts),
+        datasets: [
+          {
+            label: useDefault ? '# of Countries' : '# of Regions',
+            data: useDefault ? Object.values(countryShifts) : Object.values(regionShifts),
+            backgroundColor: ['#e6194b', '#3cb44b', '#ffe119'],
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true
+              },
+              scaleLabel: {
+                display: true,
+                labelString: useDefault ? 'Number of Countries' : 'Number of Regions'
+              }
+            }
+          ],
+          xAxes: [
+            {
+              scaleLabel: {
+                display: false,
+                labelString: ''
+              }
+            }
+          ]
+        }
+      }
+    });
+  };
+
+  req.send();
+}
+
 document.addEventListener('DOMContentLoaded', event => {
   getElectionsData();
   drawScatter1();
+  drawPieChart1();
 });

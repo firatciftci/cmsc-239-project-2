@@ -6,10 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <link href="main.css" type="text/css" rel="stylesheet" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script type="text/javascript" src="./scripts.js"></script>
     <script src="bundle.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
   </head>
@@ -55,22 +54,361 @@
         <div id="barChart1Vis" class="vis">
           <div class="vis-title">Mean Political Leaning by Region</div>
           <div class="vis-buttons">
-            <button id="reset" onclick="regionClick(this.id)">Reset</button>
-            <button id="Eastern Europe" onclick="regionClick(this.id)">Eastern Europe</button>
-            <button id="Western Europe" onclick="regionClick(this.id)">Western Europe</button>
-            <button id="Southwestern Europe" onclick="regionClick(this.id)">Southwestern Europe</button>
-            <button id="Northern Europe" onclick="regionClick(this.id)">Northern Europe</button>
-            <button id="Central Europe" onclick="regionClick(this.id)">Central Europe</button>
-            <button id="Southern Europe" onclick="regionClick(this.id)">Southern Europe</button>
-            <button id="Southeastern Europe" onclick="regionClick(this.id)">Southeastern Europe</button>
-            <button id="Central Asia" onclick="regionClick(this.id)">Central Asia</button>
-            <button id="Southwestern Asia" onclick="regionClick(this.id)">Southwestern Asia</button>
-            <button id="North America" onclick="regionClick(this.id)">North America</button>
-            <button id="Middle East" onclick="regionClick(this.id)">Middle East</button>
+            <button id="reset" style="background-color: #333" onclick="regionClick(this.id)">Reset</button>
+            <button
+              id="Eastern Europe"
+              style="background-color: rgb(166,206,227)"
+              onclick="regionClick(this.id)"
+            >
+              Eastern Europe
+            </button>
+            <button
+              id="Western Europe"
+              style="background-color: rgb(31,120,180)"
+              onclick="regionClick(this.id)"
+            >
+              Western Europe
+            </button>
+            <button
+              id="Southwestern Europe"
+              style="background-color: rgb(178,223,138)"
+              onclick="regionClick(this.id)"
+            >
+              Southwestern Europe
+            </button>
+            <button
+              id="Northern Europe"
+              style="background-color: rgb(51,160,44)"
+              onclick="regionClick(this.id)"
+            >
+              Northern Europe
+            </button>
+            <button
+              id="Central Europe"
+              style="background-color: rgb(251,154,153)"
+              onclick="regionClick(this.id)"
+            >
+              Central Europe
+            </button>
+            <button
+              id="Southern Europe"
+              style="background-color: rgb(227,26,28)"
+              onclick="regionClick(this.id)"
+            >
+              Southern Europe
+            </button>
+            <button
+              id="Southeastern Europe"
+              style="background-color: rgb(253,191,111)"
+              onclick="regionClick(this.id)"
+            >
+              Southeastern Europe
+            </button>
+            <button id="Central Asia" style="background-color: rgb(255,127,0)" onclick="regionClick(this.id)">
+              Central Asia
+            </button>
+            <button
+              id="Southwestern Asia"
+              style="background-color: rgb(202,178,214)"
+              onclick="regionClick(this.id)"
+            >
+              Southwestern Asia
+            </button>
+            <button
+              id="North America"
+              style="background-color: rgb(106,61,154)"
+              onclick="regionClick(this.id)"
+            >
+              North America
+            </button>
+            <button
+              id="Middle East"
+              style="background-color: rgb(255,255,153)"
+              onclick="regionClick(this.id)"
+            >
+              Middle East
+            </button>
           </div>
           <canvas id="RegionsBarChart"></canvas>
         </div>
       </div>
+      <script>
+        const SECRETKEY = '$2a$10$95O3pYS8s40pMgpxV.LKI.n5pC9JTNFa3MODMZzfDG2JAZ3mhrIFe';
+
+        function mean(arr) {
+          return arr.reduce((p, c, _, a) => p + c / a.length, 0);
+        }
+
+        function groupBy(data, key) {
+          return data.reduce((acc, row) => {
+            if (!acc[row[key]]) {
+              acc[row[key]] = [];
+            }
+            acc[row[key]].push(row);
+            return acc;
+          }, {});
+        }
+
+        function regionClick(region) {
+          getElectionsData(region);
+        }
+
+        function getElectionsData(region) {
+          let countryData = null;
+          let req = new XMLHttpRequest();
+          req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
+          req.setRequestHeader('secret-key', SECRETKEY);
+          req.onload = function() {
+            var jsonResponse = req.response;
+            countryData = JSON.parse(jsonResponse);
+            const regions = [...new Set(countryData.map(d => d.Region))];
+            const regionData = [];
+
+            regions.forEach(region => {
+              const specificRegion = {};
+              const regionDataFirstMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              const regionDataLastMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear > 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              specificRegion['Region'] = region;
+              specificRegion['MeanScore'] = mean([regionDataFirstMean, regionDataLastMean]);
+              regionData.push(specificRegion);
+            });
+
+            var chart = document.getElementById('RegionsBarChart');
+            const regionDataR = groupBy(regionData, 'Region');
+            const regionDataM = groupBy(regionData, 'MeanScore');
+
+            const regionsBarChart = new Chart(chart, {
+              type: 'bar',
+              data: {
+                labels: Object.keys(regionDataR),
+                datasets: [
+                  {
+                    label: 'Mean Political Leaning',
+                    data: Object.keys(regionDataM).map(x => parseFloat(x).toFixed(2)),
+                    backgroundColor: [
+                      'rgba(166, 206, 227, 0.5)',
+                      'rgba(31, 120, 180, 0.5)',
+                      'rgba(178, 223, 138, 0.5)',
+                      'rgba(51, 160, 44, 0.5)',
+                      'rgba(251, 154, 153, 0.5)',
+                      'rgba(227, 26, 28, 0.5)',
+                      'rgba(253, 191, 111, 0.5)',
+                      'rgba(255, 127, 0, 0.5)',
+                      'rgba(202, 178, 214, 0.5)',
+                      'rgba(106, 61, 154, 0.5)',
+                      'rgba(177, 89, 40, 0.5)'
+                    ],
+                    borderColor: [
+                      'rgba(166, 206, 227, 1)',
+                      'rgba(31, 120, 180, 1)',
+                      'rgba(178, 223, 138, 1)',
+                      'rgba(51, 160, 44, 1)',
+                      'rgba(251, 154, 153, 1)',
+                      'rgba(227, 26, 28, 1)',
+                      'rgba(253, 191, 111, 1)',
+                      'rgba(255, 127, 0, 1)',
+                      'rgba(202, 178, 214, 1)',
+                      'rgba(106, 61, 154, 1)',
+                      'rgba(177, 89, 40, 1)'
+                    ],
+                    borderWidth: 1
+                  }
+                ]
+              },
+              options: {
+                scales: {
+                  yAxes: [
+                    {
+                      ticks: {
+                        beginAtZero: true
+                      },
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Weighted Probability Score'
+                      }
+                    }
+                  ],
+                  xAxes: [
+                    {
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Regions'
+                      }
+                    }
+                  ]
+                },
+                legend: {
+                  display: false
+                }
+              }
+            });
+
+            if (region !== undefined && region !== 'reset') {
+              const countriesInRegion = countryData.filter(d => d.Region === region && d.ElectionYear > 2005);
+
+              const countryDataC = groupBy(countriesInRegion, 'Country');
+              const countryDataM = groupBy(countriesInRegion, 'WeightedCountryScore');
+
+              $('#RegionsBarChart').remove();
+              $('#barChart1Vis').append('<canvas id="RegionsBarChart"><canvas>');
+
+              chart = document.getElementById('RegionsBarChart');
+              const countriesBarChart = new Chart(chart, {
+                type: 'bar',
+                data: {
+                  labels: Object.keys(countryDataC),
+                  datasets: [
+                    {
+                      label: 'Mean Political Leaning in Region',
+                      data: Object.keys(countryDataM).map(x => parseFloat(x).toFixed(2)),
+                      backgroundColor: [
+                        'rgba(166, 206, 227, 0.5)',
+                        'rgba(31, 120, 180, 0.5)',
+                        'rgba(178, 223, 138, 0.5)',
+                        'rgba(51, 160, 44, 0.5)',
+                        'rgba(251, 154, 153, 0.5)',
+                        'rgba(227, 26, 28, 0.5)',
+                        'rgba(253, 191, 111, 0.5)',
+                        'rgba(255, 127, 0, 0.5)',
+                        'rgba(202, 178, 214, 0.5)',
+                        'rgba(106, 61, 154, 0.5)',
+                        'rgba(177, 89, 40, 0.5)'
+                      ],
+                      borderColor: [
+                        'rgba(166, 206, 227, 1)',
+                        'rgba(31, 120, 180, 1)',
+                        'rgba(178, 223, 138, 1)',
+                        'rgba(51, 160, 44, 1)',
+                        'rgba(251, 154, 153, 1)',
+                        'rgba(227, 26, 28, 1)',
+                        'rgba(253, 191, 111, 1)',
+                        'rgba(255, 127, 0, 1)',
+                        'rgba(202, 178, 214, 1)',
+                        'rgba(106, 61, 154, 1)',
+                        'rgba(177, 89, 40, 1)'
+                      ],
+                      borderWidth: 1
+                    }
+                  ]
+                },
+                options: {
+                  scales: {
+                    yAxes: [
+                      {
+                        ticks: {
+                          beginAtZero: true
+                        },
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Weighted Probability Score'
+                        }
+                      }
+                    ],
+                    xAxes: [
+                      {
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Countries in ' + region
+                        }
+                      }
+                    ]
+                  },
+                  legend: {
+                    display: false
+                  }
+                }
+              });
+            } else if (region === 'reset') {
+              $('#RegionsBarChart').remove();
+              $('#barChart1Vis').append('<canvas id="RegionsBarChart"><canvas>');
+
+              var chart = document.getElementById('RegionsBarChart');
+              const regionDataR = groupBy(regionData, 'Region');
+              const regionDataM = groupBy(regionData, 'MeanScore');
+
+              const regionsBarChart = new Chart(chart, {
+                type: 'bar',
+                data: {
+                  labels: Object.keys(regionDataR),
+                  datasets: [
+                    {
+                      label: 'Mean Political Leaning',
+                      data: Object.keys(regionDataM).map(x => parseFloat(x).toFixed(2)),
+                      backgroundColor: [
+                        'rgba(166, 206, 227, 0.5)',
+                        'rgba(31, 120, 180, 0.5)',
+                        'rgba(178, 223, 138, 0.5)',
+                        'rgba(51, 160, 44, 0.5)',
+                        'rgba(251, 154, 153, 0.5)',
+                        'rgba(227, 26, 28, 0.5)',
+                        'rgba(253, 191, 111, 0.5)',
+                        'rgba(255, 127, 0, 0.5)',
+                        'rgba(202, 178, 214, 0.5)',
+                        'rgba(106, 61, 154, 0.5)',
+                        'rgba(177, 89, 40, 0.5)'
+                      ],
+                      borderColor: [
+                        'rgba(166, 206, 227, 1)',
+                        'rgba(31, 120, 180, 1)',
+                        'rgba(178, 223, 138, 1)',
+                        'rgba(51, 160, 44, 1)',
+                        'rgba(251, 154, 153, 1)',
+                        'rgba(227, 26, 28, 1)',
+                        'rgba(253, 191, 111, 1)',
+                        'rgba(255, 127, 0, 1)',
+                        'rgba(202, 178, 214, 1)',
+                        'rgba(106, 61, 154, 1)',
+                        'rgba(177, 89, 40, 1)'
+                      ],
+                      borderWidth: 1
+                    }
+                  ]
+                },
+                options: {
+                  scales: {
+                    yAxes: [
+                      {
+                        ticks: {
+                          beginAtZero: true
+                        },
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Weighted Probability Score'
+                        }
+                      }
+                    ],
+                    xAxes: [
+                      {
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Countries in Region'
+                        }
+                      }
+                    ]
+                  },
+                  legend: {
+                    display: false
+                  }
+                }
+              });
+            }
+          };
+          req.send();
+
+          return countryData;
+        }
+
+        const countryData = getElectionsData();
+      </script>
+
       <hr />
 
       <!-- Scatter (Joe) -->
@@ -84,7 +422,7 @@
         eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
         numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
         nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
-        <div class="vis">
+        <div id="scatterVis" class="vis">
           <div class="vis-title">Map with Regions Highlighted</div>
           <div class="vis-switch">
             <div style="background-color: white; align-self: center">First Election</div>
@@ -97,6 +435,300 @@
           <canvas id="MapAllRegions"></canvas>
         </div>
       </div>
+      <script>
+        const drawScatter1 = () => {
+          // determine whether user has selected first or last election
+          const selectedFirst = !document.getElementById('first-last-switch').checked;
+
+          let countryData = null;
+
+          let req = new XMLHttpRequest();
+          req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
+          req.setRequestHeader('secret-key', SECRETKEY);
+          req.onload = function() {
+            var jsonResponse = req.response;
+            countryData = JSON.parse(jsonResponse);
+            const regions = [...new Set(countryData.map(d => d.Region))];
+            const regionData = [];
+
+            regions.forEach(region => {
+              const specificRegion = {};
+
+              const regionDataFirstMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+
+              const regionDataLastMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear > 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              specificRegion['Region'] = region;
+              specificRegion['FirstScore'] = regionDataFirstMean;
+              specificRegion['SecondScore'] = regionDataLastMean;
+              regionData.push(specificRegion);
+            });
+
+            const regionDataR = groupBy(regionData, 'Region');
+            const regionDataV1 = groupBy(regionData, 'FirstScore');
+            const regionDataV2 = groupBy(regionData, 'SecondScore');
+
+            $('#MapAllRegions').remove();
+            $('#scatterVis').append('<canvas id="MapAllRegions"><canvas>');
+
+            // draw chart
+            const chartNode = document.getElementById('MapAllRegions');
+            const scatterPlot = new Chart(chartNode, {
+              type: 'scatter',
+              data: {
+                datasets: [
+                  {
+                    label: 'Political Leaning First Election',
+                    data: Object.values(regionDataR).map(x => x[0].FirstScore.toFixed(2)),
+                    backgroundColor: 'rgba(255, 100, 100, 1)',
+                    radius: 7,
+                    hoverRadius: 10
+                  }
+                ],
+                labels: Object.keys(regionDataR)
+              },
+              options: {
+                scales: {
+                  xAxes: [
+                    {
+                      type: 'category',
+                      position: 'bottom',
+                      ticks: {
+                        min: 'Eastern Europe',
+                        max: 'Middle East'
+                      }
+                    }
+                  ]
+                }
+              }
+            });
+
+            if (selectedFirst === false) {
+              $('#MapAllRegions').remove();
+              $('#scatterVis').append('<canvas id="MapAllRegions"><canvas>');
+
+              const chartNode = document.getElementById('MapAllRegions');
+
+              const scatterPlot = new Chart(chartNode, {
+                type: 'scatter',
+                data: {
+                  datasets: [
+                    {
+                      label: 'Political Leaning Last Election',
+                      data: Object.values(regionDataR).map(x => x[0].SecondScore.toFixed(2)),
+                      backgroundColor: 'rgba(100, 100, 255, 1)',
+                      radius: 7,
+                      hoverRadius: 10
+                    }
+                  ],
+                  labels: Object.keys(regionDataR)
+                },
+                options: {
+                  scales: {
+                    xAxes: [
+                      {
+                        type: 'category',
+                        position: 'bottom',
+                        ticks: {
+                          min: 'Eastern Europe',
+                          max: 'Middle East'
+                        }
+                      }
+                    ]
+                  }
+                }
+              });
+            }
+          };
+
+          req.send();
+        };
+
+        drawScatter1();
+      </script>
+
+      <hr />
+
+      <!-- Pie 1 (David) -->
+      <div class="vis-group">
+        <!-- David fill this part with real text -->
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
+        nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
+        amet laudantium consectetur provident asperiores beatae blanditiis! Dolorum voluptate fuga
+        repudiandae. Blanditiis dicta tempora corrupti perspiciatis animi quis, quos quibusdam veritatis
+        soluta sunt corporis est dolorum totam magnam labore ut dolore laboriosam saepe harum nesciunt. Ipsa,
+        eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
+        numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
+        nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
+        <div class="vis">
+          <div class="vis-title">Political Shifts in 54 Countries</div>
+          <div class="vis-switch">
+            <div style="background-color: white; align-self: center">Group By Region</div>
+            <div class="round">
+              <input type="checkbox" id="checkbox" onclick="drawPieChart1()" />
+              <label for="checkbox"></label>
+            </div>
+          </div>
+          <p></p>
+          <canvas id="PieChartRegions"></canvas>
+        </div>
+      </div>
+      <script>
+        const drawPieChart1 = () => {
+          function groupBy(data, key) {
+            return data.reduce((acc, row) => {
+              if (!acc[row[key]]) {
+                acc[row[key]] = [];
+              }
+              acc[row[key]].push(row);
+              return acc;
+            }, {});
+          }
+
+          // determine whether user has checked the box
+          const useDefault = !document.getElementById('checkbox').checked;
+
+          let req = new XMLHttpRequest();
+          let countryData = null;
+
+          req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
+          req.setRequestHeader('secret-key', SECRETKEY);
+          req.onload = function() {
+            var jsonResponse = req.response;
+            countryData = JSON.parse(jsonResponse);
+            const regions = [...new Set(countryData.map(d => d.Region))];
+            const regionData = [];
+
+            regions.forEach(region => {
+              const specificRegion = {};
+
+              const regionDataFirstMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+
+              const regionDataLastMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear > 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              specificRegion['Region'] = region;
+              specificRegion['FirstScore'] = regionDataFirstMean;
+              specificRegion['SecondScore'] = regionDataLastMean;
+              const absRegionScore = Math.abs(regionDataLastMean - regionDataFirstMean);
+              if (absRegionScore < 3) {
+                specificRegion['Moved'] = 1;
+              } else if (regionDataLastMean > regionDataFirstMean) {
+                specificRegion['Moved'] = 2;
+              } else {
+                specificRegion['Moved'] = 0;
+              }
+              regionData.push(specificRegion);
+            });
+
+            const countryLabels = ['Shifted Left', 'Stayed Roughly the Same', 'Shifted Right'];
+
+            const groupedCountryData = groupBy(countryData, 'Country');
+            const groupedCountryDataCountries = Object.keys(groupedCountryData);
+
+            const countryShifts = groupedCountryDataCountries.reduce((total, countryName) => {
+              countryData = groupedCountryData[countryName];
+              const absScore = Math.abs(
+                countryData[1].WeightedElectionScore - countryData[0].WeightedElectionScore
+              );
+              if (absScore < 3) {
+                if (total[countryLabels[1]]) {
+                  total[countryLabels[1]] += 1;
+                } else {
+                  total[countryLabels[1]] = 1;
+                }
+              } else if (countryData[1].WeightedElectionScore > countryData[0].WeightedElectionScore) {
+                if (total[countryLabels[2]]) {
+                  total[countryLabels[2]] += 1;
+                } else {
+                  total[countryLabels[2]] = 1;
+                }
+              } else {
+                if (total[countryLabels[0]]) {
+                  total[countryLabels[0]] += 1;
+                } else {
+                  total[countryLabels[0]] = 1;
+                }
+              }
+              return total;
+            }, {});
+
+            const regionDataR = groupBy(regionData, 'Region');
+            const regionDataV1 = groupBy(regionData, 'FirstScore');
+            const regionDataV2 = groupBy(regionData, 'SecondScore');
+            const regionDataMoved = groupBy(regionData, 'Moved');
+
+            const regionShifts = { 'Shifted Left': 0, 'Stayed Roughly the Same': 0, 'Shifted Right': 0 };
+
+            const regionShiftsbleh = regionData.reduce((total, countryData) => {
+              const labelIndex = countryData['Moved'];
+              regionShifts[countryLabels[labelIndex]] += 1;
+              return total;
+            }, {});
+
+            // draw chart
+            const chartNode = document.getElementById('PieChartRegions');
+            var regionsBarChart = new Chart(chartNode, {
+              type: 'bar',
+              data: {
+                labels: useDefault ? Object.keys(countryShifts) : Object.keys(regionShifts),
+                datasets: [
+                  {
+                    label: useDefault ? '# of Countries' : '# of Regions',
+                    data: useDefault ? Object.values(countryShifts) : Object.values(regionShifts),
+                    backgroundColor: ['#e6194b', '#3cb44b', '#ffe119'],
+                    borderWidth: 1
+                  }
+                ]
+              },
+              options: {
+                scales: {
+                  yAxes: [
+                    {
+                      ticks: {
+                        beginAtZero: true,
+                        callback: function(value) {if (value % 1 === 0) {return value;}}
+                      },
+                      scaleLabel: {
+                        display: true,
+                        labelString: useDefault ? 'Number of Countries' : 'Number of Regions'
+                      }
+                    }
+                  ],
+                  xAxes: [
+                    {
+                      scaleLabel: {
+                        display: false,
+                        labelString: ''
+                      }
+                    }
+                  ]
+                },
+                legend: {
+                  display: false
+                }
+              }
+            });
+          };
+
+          req.send();
+        };
+
+        drawPieChart1();
+      </script>
     </div>
   </body>
 </html>

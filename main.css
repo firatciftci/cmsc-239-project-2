@@ -87,8 +87,9 @@ body {
 
 .vis-buttons > button {
   cursor: pointer;
-  background-color: #333;
   color: white;
+  text-shadow: #333 0px 0px 3px;
+  -webkit-font-smoothing: antialiased;
   border: none;
   outline: 0;
   border-radius: 10px;
@@ -98,7 +99,7 @@ body {
 }
 
 .vis-buttons > button:hover {
-  background-color: #555;
+  background-color: #555 !important;
 }
 
 /* .vis-buttons > button#Reset {
