@@ -794,5 +794,122 @@
         drawPieChart1();
       </script>
     </div>
+
+    <div>
+        <!-- David fill this part with real text -->
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ratione velit aut deserunt, minus,
+        nihil delectus dolorum, animi necessitatibus expedita fuga obcaecati illo tempore culpa! Explicabo qui
+        amet laudantium consectetur provident asperiores beatae blanditiis! Dolorum voluptate fuga
+        repudiandae. Blanditiis dicta tempora corrupti perspiciatis animi quis, quos quibusdam veritatis
+        soluta sunt corporis est dolorum totam magnam labore ut dolore laboriosam saepe harum nesciunt. Ipsa,
+        eum iure vitae asperiores molestias ea facere ducimus laboriosam veritatis deleniti quisquam ullam
+        numquam hic delectus officia sint ipsum quod enim corrupti minima. Vero, doloremque possimus dolores
+        nobis temporibus sequi velit, consectetur, repudiandae iure voluptate a minima.
+        <div id="horizontalVis" class="vis">
+          <div class="vis-title">What countries received the most left votes?</div>
+          <canvas id="BarChart1"></canvas>
+        </div>
+      </div>
+      <script>
+        function mean(arr) {
+          return arr.reduce((p, c, _, a) => p + c / a.length, 0);
+        }
+
+        function groupBy(data, key) {
+          return data.reduce((acc, row) => {
+            if (!acc[row[key]]) {
+              acc[row[key]] = [];
+            }
+            acc[row[key]].push(row);
+            return acc;
+          }, {});
+        }
+
+        function drawBarChart1(region) {
+          let countryData = null;
+          let req = new XMLHttpRequest();
+          req.open('GET', 'https://api.jsonbin.io/b/5d01889058196b429f531883', true);
+          req.setRequestHeader('secret-key', SECRETKEY);
+          req.onload = function() {
+            var jsonResponse = req.response;
+            countryData = JSON.parse(jsonResponse);
+            const regions = [...new Set(countryData.map(d => d.Region))];
+            const regionData = [];
+
+            regions.forEach(region => {
+              const specificRegion = {};
+              const regionDataFirstMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear <= 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              const regionDataLastMean = mean(
+                countryData
+                  .filter(d => d.Region === region && d.ElectionYear > 2005)
+                  .map(d => d.WeightedElectionScore)
+              );
+              specificRegion['Region'] = region;
+              specificRegion['MeanScore'] = mean([regionDataFirstMean, regionDataLastMean]);
+              regionData.push(specificRegion);
+            });
+
+            var chartNode = document.getElementById('RegionsBarChart');
+
+            countryData.sort((a, b) => b.WeightedElectionScore - a.WeightedElectionScore);
+            rightmostLastElection = countryData[0];
+            rightmostFirstElection = countryData.find(x => x.Country === rightmostLastElection.Country && x.ElectionYear !== rightmostLastElection.ElectionYear)
+
+            // get votes by denomination (center, center right, etc.)
+            const votingDataFirst = {
+              'Left': 29.7,
+              'Center Left': 0,
+              'Center': 5.9,
+              'Center Right': 0,
+              'Right': 55.7
+            }
+            const votingDataLast = {
+              'Left': 11.8,
+              'Center Left': 0,
+              'Center': 0,
+              'Center Right': 0,
+              'Right': 84.4
+            }
+            console.log(Object.values(votingDataLast))
+
+            const barChart = new Chart(chartNode, {
+              type: 'bar',
+              data: {
+                labels: ['Left', 'Center Left', 'Center', 'Center Right', 'Right'],
+                datasets: [
+                  {
+                    data: Object.values(votingDataFirst),
+                    label: '2000 Election'
+                  }, {
+                    data: Object.values(votingDataLast),
+                    label: '2018 Election'
+                  }]
+              },
+              options: {
+                scales: {
+                  xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'Party Affiliation'
+                    }
+                  }]
+                }
+              }
+            })
+
+          };
+          req.send();
+
+          return countryData;
+        }
+
+        drawBarChart1();
+      </script>
+    </div>
+
   </body>
 </html>
